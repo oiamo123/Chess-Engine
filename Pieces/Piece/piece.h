@@ -1,3 +1,5 @@
+#ifndef PIECE_H
+#define PIECE_H
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -20,3 +22,5 @@ class Piece {
     virtual vector<int16_t> getMoves();
     friend std::ostream& operator<<(std::ostream& os, const Piece& piece);
 };
+
+#endif

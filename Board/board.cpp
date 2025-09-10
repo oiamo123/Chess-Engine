@@ -7,8 +7,8 @@ using std::endl;
 
 // Constructor
 Board::Board() {
-    // white = std::make_unique<Player>();
-    // black = std::make_unique<Player>();
+    white = std::make_unique<Player>();
+    black = std::make_unique<Player>();
 
     whiteCanCastleK = 1;
     whiteCanCastleQ = 1;
@@ -19,7 +19,7 @@ Board::Board() {
     turn = 0;
 }
 
-void Board::create(const std::string* fen) {
+void Board::create(const std::string* fen = nullptr) {
     if (fen != nullptr) {
         // Parse FEN string
         return;

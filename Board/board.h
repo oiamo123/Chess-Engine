@@ -1,7 +1,7 @@
 #ifndef BOARD_H
 #define BOARD_H
-// #include "../Pieces/Piece/piece.h"
-// #include "../Player/player.h"
+#include "../Pieces/Piece/piece.h"
+#include "../Player/player.h"
 #include <cstdint>
 #include <string>
 using std::int64_t;
@@ -10,8 +10,8 @@ using std::string;
 
 class Board {
 public:
-    // std::unique_ptr<Player> white;
-    // std::unique_ptr<Player> black;
+    std::unique_ptr<Player> white;
+    std::unique_ptr<Player> black;
 
     int8_t whiteCanCastleK;
     int8_t whiteCanCastleQ;

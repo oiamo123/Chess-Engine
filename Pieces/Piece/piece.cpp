@@ -1,5 +1,7 @@
 #include "./piece.h"
-#include "../../Utils/utils.cpp"
+#include "../../Utils/utils.h"
+#include <iostream>
+using std::ostream;
 
 Piece::Piece(int8_t type, int8_t color, int16_t position) {
     this->type = type;
@@ -25,8 +27,8 @@ vector<int16_t> Piece::getMoves() {
 
 std::ostream& operator<<(std::ostream& os, const Piece& piece) {
     os << "("
-       << pieceTypeToString(piece.type)
-       << ", color=" << colorToString(piece.color)
+       << Utils::pieceTypeToString(piece.type)
+       << ", color=" << Utils::colorToString(piece.color)
        << ", position=" << piece.position
        << ")";
     return os;
