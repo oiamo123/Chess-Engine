@@ -26,10 +26,10 @@ vector<int16_t> Piece::getMoves() {
 }
 
 std::ostream& operator<<(std::ostream& os, const Piece& piece) {
-    os << "("
-       << Utils::pieceTypeToString(piece.type)
-       << ", color=" << Utils::colorToString(piece.color)
-       << ", position=" << piece.position
+    os << "(piece="
+       << Utils::getType(piece.type)
+       << ", color=" << Utils::getColor(piece.color)
+       << ", position=" << Utils::getSquare(piece.position)
        << ")";
     return os;
 }

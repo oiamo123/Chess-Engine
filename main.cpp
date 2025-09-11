@@ -1,22 +1,15 @@
 #include <iostream>
 #include "./Board/board.h"
 #include "./Utils/utils.h"
+#include "./Pieces/Piece/piece.h"
 
 using std::cout;
 using std::endl;
 
 int main() {
     Board board;
-    
     board.create();
     board.display();
-
-    Utils::printBitboard(board.board);
-    const string color = Utils::getColor(1);
-    const string type = Utils::getType(2);
-    const string square = Utils::getSquare(2);
-
-    cout << "Color: " << color << ", Type: " << type << ", Square: " << square << endl;
 
     return 0;
 }
