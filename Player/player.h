@@ -1,8 +1,11 @@
+#ifndef PLAYER_H
+#define PLAYER_H
 #include <cstdint>
 using std::int8_t;
 using std::int64_t;
 
 class Player {
+    public:
     int8_t color;
     int64_t rooks;
     int64_t knights;
@@ -30,3 +33,5 @@ class Player {
     int64_t getKing();
     int64_t getAllPieces();
 };
+
+#endif
