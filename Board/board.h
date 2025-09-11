@@ -25,7 +25,7 @@ public:
     void display();
     void create(const string* fen = nullptr);
     void createPieces();
-    void move(const int64_t* move);
+    void move(const int32_t move);
 };
 
 #endif

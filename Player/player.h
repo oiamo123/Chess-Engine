@@ -1,5 +1,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
+#include <memory>
 #include <cstdint>
 using std::int8_t;
 using std::int64_t;

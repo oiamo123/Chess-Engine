@@ -5,24 +5,12 @@
 using std::string;
 using std::int8_t;
 
-enum class PieceType {
-    Pawn = 1,
-    Knight,
-    Bishop,
-    Rook,
-    Queen,
-    King
-};
-
-enum class Color {
-    White = 1,
-    Black
-};
-
 class Utils {
     public:
-        static std::string pieceTypeToString(const int8_t type);
-        static std::string colorToString(const int8_t color);
+        static std::string getType(const int8_t type);
+        static std::string getColor(const int8_t color);
+        static std::string getSquare(const int8_t square);
+        static void printBitboard(const uint64_t bitboard);
 };
 
 #endif
