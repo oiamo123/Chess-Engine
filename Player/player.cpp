@@ -1,51 +1,30 @@
-#include "./player.h"
+#include "player.h"
 
 Player::Player(
-    int8_t color, 
-    int64_t rooks, 
-    int64_t knights, 
-    int64_t bishops, 
-    int64_t pawns, 
-    int64_t queen, 
-    int64_t king
+    int8_t color,
+    uint64_t rooks,
+    uint64_t knights,
+    uint64_t bishops,
+    uint64_t pawns,
+    uint64_t queen,
+    uint64_t king
 ) {
     this->color = color;
-    this->rooks = rooks;
-    this->knights = knights;
-    this->bishops = bishops;
-    this->pawns = pawns;
-    this->queen = queen;
-    this->king = king;
+    pieceBitboards.fill(0ULL);
+    pieceBitboards[(int)PieceType::Rook]   = rooks;
+    pieceBitboards[(int)PieceType::Knight] = knights;
+    pieceBitboards[(int)PieceType::Bishop] = bishops;
+    pieceBitboards[(int)PieceType::Pawn]   = pawns;
+    pieceBitboards[(int)PieceType::Queen]  = queen;
+    pieceBitboards[(int)PieceType::King]   = king;
 }
 
-int8_t Player::getColor() {
-    return color;
+uint64_t Player::getAllPieces() const {
+    uint64_t all = 0ULL;
+    for (int i = 0; i < (int)PieceType::Count; ++i) all |= pieceBitboards[i];
+    return all;
 }
 
-int64_t Player::getPawns() {
-    return pawns;
-}
-
-int64_t Player::getRooks() {
-    return rooks;
-}
-
-int64_t Player::getKnights() {
-    return knights;
-}
-
-int64_t Player::getBishops() {
-    return bishops;
-}
-
-int64_t Player::getQueen() {
-    return queen;
-}
-
-int64_t Player::getKing() {
-    return king;
-}
-
-int64_t Player::getAllPieces() {
-    return rooks | knights | bishops | pawns | queen | king;
+uint64_t& Player::operator[](PieceType type) {
+    return pieceBitboards[(int)type];
 }

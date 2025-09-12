@@ -1,38 +1,27 @@
 #ifndef PLAYER_H
 #define PLAYER_H
-#include <memory>
+
+#include <array>
 #include <cstdint>
-using std::int8_t;
-using std::int64_t;
+#include "../Utils/global.h"
 
 class Player {
-    public:
+public:
     int8_t color;
-    int64_t rooks;
-    int64_t knights;
-    int64_t bishops;
-    int64_t pawns;
-    int64_t queen;
-    int64_t king;
+    std::array<uint64_t, (int)PieceType::Count> pieceBitboards;
 
     Player(
-        int8_t color, 
-        int64_t rooks, 
-        int64_t knights, 
-        int64_t bishops, 
-        int64_t pawns, 
-        int64_t queen, 
-        int64_t king
+        int8_t color,
+        uint64_t rooks,
+        uint64_t knights,
+        uint64_t bishops,
+        uint64_t pawns,
+        uint64_t queen,
+        uint64_t king
     );
-    
-    int8_t getColor();
-    int64_t getPawns();
-    int64_t getRooks();
-    int64_t getKnights();
-    int64_t getBishops();
-    int64_t getQueen();
-    int64_t getKing();
-    int64_t getAllPieces();
+
+    uint64_t getAllPieces() const;
+    uint64_t& operator[](PieceType type);
 };
 
 #endif

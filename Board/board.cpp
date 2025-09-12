@@ -7,18 +7,14 @@ using std::cout;
 using std::endl;
 using std::string;
 
-// Constructor
 Board::Board() {
-    white = nullptr;
-    black = nullptr;
+    this->whiteCanCastleK = 1;
+    this->whiteCanCastleQ = 1;
+    this->blackCanCastleK = 1;
+    this->blackCanCastleQ = 1;
 
-    whiteCanCastleK = 1;
-    whiteCanCastleQ = 1;
-    blackCanCastleK = 1;
-    blackCanCastleQ = 1;
-
-    board = 0xFFFF00000000FFFF;
-    turn = 0;
+    this->board = 0xFFFF00000000FFFF;
+    this->turn = 0;
 }
 
 void Board::create(const string* fen) {
@@ -27,7 +23,7 @@ void Board::create(const string* fen) {
         return;
     }
 
-    white = std::make_unique<Player>(
+    players[0] = std::make_unique<Player>(
         1, 
         0x0000000000000081ULL, 
         0x0000000000000042ULL, 
@@ -37,7 +33,7 @@ void Board::create(const string* fen) {
         0x0000000000000010ULL 
     );
 
-    black = std::make_unique<Player>(
+    players[1] = std::make_unique<Player>(
         -1, 
         0x8100000000000000ULL, 
         0x4200000000000000ULL, 
@@ -50,7 +46,7 @@ void Board::create(const string* fen) {
     whiteCanCastleK = whiteCanCastleQ = 1;
     blackCanCastleK = blackCanCastleQ = 1;
 
-    board = white->getAllPieces() | black->getAllPieces();
+    board = players[0]->getAllPieces() | players[1]->getAllPieces();
     turn = 0;
 }
 
@@ -58,21 +54,21 @@ void Board::display() {
     for (int rank = 7; rank >= 0; rank--) {
         for (int file = 0; file < 8; file++) {
             int square = rank * 8 + file;
-            int64_t mask = 1LL << square;
-            char pieceChar = '.';
+            uint64_t mask = 1LL << square;
+            string pieceChar = ".";
 
-            if (white->getPawns() & mask) pieceChar = 'P';
-            else if (white->getRooks() & mask) pieceChar = 'R';
-            else if (white->getKnights() & mask) pieceChar = 'N';
-            else if (white->getBishops() & mask) pieceChar = 'B';
-            else if (white->getQueen() & mask) pieceChar = 'Q';
-            else if (white->getKing() & mask) pieceChar = 'K';
-            else if (black->getPawns() & mask) pieceChar = 'p';
-            else if (black->getRooks() & mask) pieceChar = 'r';
-            else if (black->getKnights() & mask) pieceChar = 'n';
-            else if (black->getBishops() & mask) pieceChar = 'b';
-            else if (black->getQueen() & mask) pieceChar = 'q';
-            else if (black->getKing() & mask) pieceChar = 'k';
+            if (players[(int)Color::White]->pieceBitboards[(int)PieceType::Pawn] & mask) pieceChar = "♙";
+            else if (players[(int)Color::White]->pieceBitboards[(int)PieceType::Rook] & mask) pieceChar = "♖";
+            else if (players[(int)Color::White]->pieceBitboards[(int)PieceType::Knight] & mask) pieceChar = "♘";
+            else if (players[(int)Color::White]->pieceBitboards[(int)PieceType::Bishop] & mask) pieceChar = "♗";
+            else if (players[(int)Color::White]->pieceBitboards[(int)PieceType::Queen] & mask) pieceChar = "♕";
+            else if (players[(int)Color::White]->pieceBitboards[(int)PieceType::King] & mask) pieceChar = "♔";
+            else if (players[(int)Color::Black]->pieceBitboards[(int)PieceType::Pawn] & mask) pieceChar = "♟";
+            else if (players[(int)Color::Black]->pieceBitboards[(int)PieceType::Rook] & mask) pieceChar = "♜";
+            else if (players[(int)Color::Black]->pieceBitboards[(int)PieceType::Knight] & mask) pieceChar = "♞";
+            else if (players[(int)Color::Black]->pieceBitboards[(int)PieceType::Bishop] & mask) pieceChar = "♝";
+            else if (players[(int)Color::Black]->pieceBitboards[(int)PieceType::Queen] & mask) pieceChar = "♛";
+            else if (players[(int)Color::Black]->pieceBitboards[(int)PieceType::King] & mask) pieceChar = "♚";
 
             cout << pieceChar << " ";
         }
@@ -80,9 +76,22 @@ void Board::display() {
     }
 }
 
-void Board::move(const int32_t move) {
+void Board::move(int32_t move) {
     uint8_t color = (move >> 24) & MASK_8;
     uint8_t piece = (move >> 16) & MASK_8;
-    uint8_t from = (move >> 8) & MASK_8;
-    uint8_t to = (move) & MASK_8;
+    uint8_t from  = (move >> 8)  & MASK_8;
+    uint8_t to    = (move) & MASK_8;
+
+    uint64_t fromMask = 1ULL << from;
+    uint64_t toMask   = 1ULL << to;
+
+    std::unique_ptr<Player>& player = players[color];
+
+    // Update specific piece type
+    player->pieceBitboards[piece] &= ~fromMask;
+    player->pieceBitboards[piece] |= toMask;
+
+    // Update global board
+    board &= ~fromMask;
+    board |= toMask;
 }

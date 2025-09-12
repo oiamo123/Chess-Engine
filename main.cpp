@@ -11,13 +11,14 @@ int main() {
     board.create();
     board.display();
 
+    int32_t move = 0;
+    move |= (uint8_t)Color::White << 24;
+    move |= (uint8_t)PieceType::Pawn << 16; 
+    move |= (uint8_t)Square::E2 << 8; 
+    move |= (uint8_t)Square::E4;      
+
+    board.move(move);
+    board.display();
+
     return 0;
 }
-
-/*
-Board
- - Handles the chessboard and state (who's turn is it), piece placement, legal moves, castling rights etc
-Pieces
- - Represents the individual chess pieces and their movements
- - Responsible for their own movement logic and where they can move to
-*/
