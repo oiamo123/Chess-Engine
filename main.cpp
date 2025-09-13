@@ -11,11 +11,7 @@ int main() {
     board.create();
     board.display();
 
-    int32_t move = 0;
-    move |= (uint8_t)Color::White << 24;
-    move |= (uint8_t)PieceType::Pawn << 16; 
-    move |= (uint8_t)Square::E2 << 8; 
-    move |= (uint8_t)Square::E4;      
+    const int32_t move = Utils::createMove((int8_t)PieceType::Pawn, (int8_t)Color::White, (int8_t)Square::E2, (int8_t)Square::E4);
 
     board.move(move);
     board.display();

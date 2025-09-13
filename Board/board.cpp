@@ -2,10 +2,12 @@
 #include <iostream>
 #include "./board.h"
 #include "../Player/player.h"
+#include "../Utils/utils.h"
 #include "../Utils/global.h"
 using std::cout;
 using std::endl;
 using std::string;
+using std::tuple;
 
 Board::Board() {
     this->whiteCanCastleK = 1;
@@ -77,10 +79,7 @@ void Board::display() {
 }
 
 void Board::move(int32_t move) {
-    uint8_t color = (move >> 24) & MASK_8;
-    uint8_t piece = (move >> 16) & MASK_8;
-    uint8_t from  = (move >> 8)  & MASK_8;
-    uint8_t to    = (move) & MASK_8;
+    auto [color, piece, from, to] = Utils::parseMove(move);
 
     uint64_t fromMask = 1ULL << from;
     uint64_t toMask   = 1ULL << to;

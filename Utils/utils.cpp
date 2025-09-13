@@ -57,3 +57,22 @@ uint64_t Utils::indexToBitboard(const int8_t index) {
 
     return 1ULL << index;
 }
+
+tuple<int8_t, int8_t, int8_t, int8_t> Utils::parseMove(const int32_t move) {
+    int8_t piece = (move >> 24) & MASK_8;
+    int color = (move >> 16) & MASK_8;
+    int8_t from = (move >> 8) & MASK_8;
+    int8_t to = move & MASK_8;
+
+    return { piece, color, from, to };
+}
+
+int32_t Utils::createMove(const int8_t piece, const int8_t color, const int8_t from, const int8_t to) {
+    int32_t move = 0;
+    move |= (uint8_t)piece << 24;
+    move |= (uint8_t)color << 16;
+    move |= (uint8_t)from << 8;
+    move |= (uint8_t)to;
+
+    return move;
+}
