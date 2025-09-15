@@ -1,6 +1,7 @@
 #include "./piece.h"
 #include "../../Utils/utils.h"
 #include <iostream>
+
 using std::ostream;
 
 Piece::Piece(int8_t type, int8_t color, uint64_t position) {
@@ -25,7 +26,7 @@ vector<int32_t> Piece::getMoves() {
     return vector<int32_t>();
 }
 
-std::ostream& operator<<(std::ostream& os, const Piece& piece) {
+std::ostream& operator<<(ostream& os, const Piece& piece) {
     os << "(piece="
        << Utils::getType(piece.type)
        << ", color=" << Utils::getColor(piece.color)

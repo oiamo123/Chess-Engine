@@ -4,10 +4,14 @@
 #include "../Player/player.h"
 #include "../Utils/utils.h"
 #include "../Utils/global.h"
+#include "../Rules/rules.h"
+
 using std::cout;
 using std::endl;
 using std::string;
 using std::tuple;
+using std::unique_ptr;
+using std::make_unique;
 
 Board::Board() {
     this->whiteCanCastleK = 1;
@@ -15,8 +19,8 @@ Board::Board() {
     this->blackCanCastleK = 1;
     this->blackCanCastleQ = 1;
 
-    this->board = 0xFFFF00000000FFFF;
     this->turn = 0;
+    this->rules = make_unique<Rules>(this);
 }
 
 void Board::create(const string* fen) {
@@ -25,7 +29,7 @@ void Board::create(const string* fen) {
         return;
     }
 
-    players[0] = std::make_unique<Player>(
+    players[0] = make_unique<Player>(
         1, 
         0x0000000000000081ULL, 
         0x0000000000000042ULL, 
@@ -35,7 +39,7 @@ void Board::create(const string* fen) {
         0x0000000000000010ULL 
     );
 
-    players[1] = std::make_unique<Player>(
+    players[1] = make_unique<Player>(
         -1, 
         0x8100000000000000ULL, 
         0x4200000000000000ULL, 
@@ -47,8 +51,6 @@ void Board::create(const string* fen) {
 
     whiteCanCastleK = whiteCanCastleQ = 1;
     blackCanCastleK = blackCanCastleQ = 1;
-
-    board = players[0]->getAllPieces() | players[1]->getAllPieces();
     turn = 0;
 }
 
@@ -84,13 +86,9 @@ void Board::move(int32_t move) {
     uint64_t fromMask = 1ULL << from;
     uint64_t toMask   = 1ULL << to;
 
-    std::unique_ptr<Player>& player = players[color];
+    unique_ptr<Player>& player = players[color];
 
     // Update specific piece type
     player->pieceBitboards[piece] &= ~fromMask;
     player->pieceBitboards[piece] |= toMask;
-
-    // Update global board
-    board &= ~fromMask;
-    board |= toMask;
 }

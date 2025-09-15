@@ -1,5 +1,6 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
+
 #include <cstdint>
 
 constexpr uint64_t MASK_8 = 0xFF;

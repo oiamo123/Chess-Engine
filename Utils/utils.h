@@ -1,8 +1,10 @@
 #ifndef UTILS_H
 #define UTILS_H
+
 #include <string>
 #include <tuple>
 #include "../Pieces/Piece/piece.h"
+
 using std::string;
 using std::int8_t;
 using std::uint64_t;

@@ -8,6 +8,7 @@ using std::int16_t;
 using std::uint64_t;
 using std::string;
 using std::vector;
+using std::ostream;
 
 class Piece {
     public:
@@ -20,7 +21,7 @@ class Piece {
     int8_t getColor();
     uint64_t getPosition();
     virtual vector<int32_t> getMoves();
-    friend std::ostream& operator<<(std::ostream& os, const Piece& piece);
+    friend ostream& operator<<(ostream& os, const Piece& piece);
 };
 
 #endif

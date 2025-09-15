@@ -5,10 +5,15 @@
 #include <cstdint>
 #include "../Utils/global.h"
 
+using std::uint64_t;
+using std::array;
+
 class Player {
 public:
     int8_t color;
-    std::array<uint64_t, (int)PieceType::Count> pieceBitboards;
+    uint64_t enPassantTarget;
+    uint64_t attackedSquares;
+    array<uint64_t, (int)PieceType::Count> pieceBitboards;
 
     Player(
         int8_t color,
@@ -21,6 +26,8 @@ public:
     );
 
     uint64_t getAllPieces() const;
+    uint64_t getAttackedSquares() const;
+    void move(int32_t move);
     uint64_t& operator[](PieceType type);
 };
 

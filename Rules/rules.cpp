@@ -1,9 +1,17 @@
 #include "./rules.h"
 #include "../Utils/utils.h"
+#include "../Board/board.h"
 
-bool Rules::isLegalMove(const std::array<std::unique_ptr<Player>, 2>& players, const int32_t move) {
+using std::unique_ptr;
+
+Rules::Rules(Board* board) {
+    this->board = board;
+}
+
+bool Rules::isLegalMove(const int32_t move) {
+    auto& players = board->players;
     auto [color, piece, from, to] = Utils::parseMove(move);
-    if (Rules::isInCheck(players, color) || !Rules::isMovingOwnPiece(players, move)) {
+    if (!Rules::isMovingOwnPiece(move)) {
         return false;
     }
 
@@ -32,13 +40,16 @@ bool Rules::isLegalMove(const std::array<std::unique_ptr<Player>, 2>& players, c
             to == from + 16 * direction && (from / 8 == startRank) && 
             !(allPieces & toBitboard) && !(allPieces & (fromBitboard << (8 * direction)))
         ) {
+            // Set en passant target
+            players[(color == (int8_t)Color::White ? black : white)]->enPassantTarget = fromBitboard << (8 * direction);
             return true;
         }
 
-        // Captures
+        // Captures / enPassant
         if (
             (to == from + 7 * direction || to == from + 9 * direction) &&
-            (toBitboard & (color == (int8_t)Color::White ? blackPieces : whitePieces))
+            ((toBitboard & (color == (int8_t)Color::White ? blackPieces : whitePieces)) ||
+            toBitboard == players[(color == (int8_t)Color::White ? black : white)]->enPassantTarget)
         ) {
             return true;
         }
@@ -67,26 +78,28 @@ bool Rules::isLegalMove(const std::array<std::unique_ptr<Player>, 2>& players, c
     if (piece == (int8_t)PieceType::King) {
     }
 
+    // Make move, check if king is in check, undo move
+
     return true;
 }
 
-bool Rules::isInCheck(const std::array<std::unique_ptr<Player>, 2>& players, const int playerColor) {
+bool Rules::isInCheck() {
     return true;
 }
 
-bool Rules::isInCheckmate(const std::array<std::unique_ptr<Player>, 2>& players, const int playerColor) {
+bool Rules::isInCheckmate() {
     return true;
 }
 
-bool Rules::isInStalemate(const std::array<std::unique_ptr<Player>, 2>& players, const int playerColor) {
+bool Rules::isInStalemate() {
     return true;
 }
 
-bool Rules::isDraw(const std::array<std::unique_ptr<Player>, 2>& players) {
+bool Rules::isDraw() {
     return true;
 }
 
-bool Rules::isMovingOwnPiece(const std::array<std::unique_ptr<Player>, 2>& players, const int32_t move) {
+bool Rules::isMovingOwnPiece(const int32_t move) {
     auto [color, piece, from, to] = Utils::parseMove(move);
     const int white = (int)Color::White;
     const int black = (int)Color::Black;
@@ -94,8 +107,8 @@ bool Rules::isMovingOwnPiece(const std::array<std::unique_ptr<Player>, 2>& playe
     const uint64_t fromBitboard = Utils::indexToBitboard(from);
 
     if (color == (int8_t)Color::White) {
-        return players[white]->pieceBitboards[piece] & fromBitboard;
+        return board->players[white]->pieceBitboards[piece] & fromBitboard;
     } else {
-        return players[black]->pieceBitboards[piece] & fromBitboard;
+        return board->players[black]->pieceBitboards[piece] & fromBitboard;
     }
 }

@@ -6,5 +6,6 @@ Board/board.cpp \
 Utils/utils.cpp \
 Player/player.cpp \
 Pieces/Piece/piece.cpp \
+Rules/rules.cpp \
 -o chess
 ./chess
