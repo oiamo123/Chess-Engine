@@ -6,6 +6,7 @@ using std::unique_ptr;
 
 Rules::Rules(Board* board) {
     this->board = board;
+    this->knightmoves = this->generateKnightTable();
 }
 
 bool Rules::isLegalMove(const int32_t move) {
@@ -15,42 +16,49 @@ bool Rules::isLegalMove(const int32_t move) {
         return false;
     }
 
+    // Helper variables
     const int white = (int)Color::White;
     const int black = (int)Color::Black;
-    
+    const bool isWhite = (color == (int8_t)Color::White);
+
     const uint64_t allPieces = players[white]->getAllPieces() | players[black]->getAllPieces();
     const uint64_t whitePieces = players[white]->getAllPieces();
     const uint64_t blackPieces = players[black]->getAllPieces();
+    const uint64_t friendlyPieces = isWhite ? whitePieces : blackPieces;
+    const uint64_t enemyPieces = isWhite ? blackPieces : whitePieces;
 
     const uint64_t toBitboard = Utils::indexToBitboard(to);
     const uint64_t fromBitboard = Utils::indexToBitboard(from);
 
     // Rules for pawn
     if (piece == (int8_t)PieceType::Pawn) {
-        int8_t direction = (color == (int8_t)Color::White) ? 1 : -1;
-        int startRank = (color == (int8_t)Color::White) ? RANK_2 : RANK_7;
+        const int8_t forward = isWhite ? 1 : -1;
+        const int startRank = isWhite ? RANK_2 : RANK_7;
+        
+        auto shiftRank = [](uint64_t bb, int8_t rankShift) -> uint64_t {
+            return rankShift > 0 ? bb << (8 * rankShift) : bb >> (8 * -rankShift);
+        };
 
-        // Forward 1
-        if (to == from + 8 * direction && !(allPieces & toBitboard)) {
+        // Single push
+        if (to == from + 8 * forward && !(allPieces & toBitboard))
             return true;
-        }
 
-        // Forward 2 (from starting rank)
-        if (
-            to == from + 16 * direction && (from / 8 == startRank) && 
-            !(allPieces & toBitboard) && !(allPieces & (fromBitboard << (8 * direction)))
-        ) {
+        // Double push
+        if (to == from + 16 * forward && (from / 8 == startRank) &&
+            !(allPieces & toBitboard) &&
+            !(allPieces & shiftRank(fromBitboard, forward))) 
+        {
             // Set en passant target
-            players[(color == (int8_t)Color::White ? black : white)]->enPassantTarget = fromBitboard << (8 * direction);
+            players[isWhite ? black : white]->enPassantTarget = shiftRank(fromBitboard, forward);
             return true;
         }
 
-        // Captures / enPassant
-        if (
-            (to == from + 7 * direction || to == from + 9 * direction) &&
-            ((toBitboard & (color == (int8_t)Color::White ? blackPieces : whitePieces)) ||
-            toBitboard == players[(color == (int8_t)Color::White ? black : white)]->enPassantTarget)
-        ) {
+        // Captures (including en passant)
+        int fileDiff = abs((to % 8) - (from % 8));
+        if ((to == from + 7 * forward || to == from + 9 * forward) && fileDiff == 1 &&
+            ((toBitboard & enemyPieces) ||
+            toBitboard == players[isWhite ? black : white]->enPassantTarget))
+        {
             return true;
         }
 
@@ -59,7 +67,9 @@ bool Rules::isLegalMove(const int32_t move) {
 
     // Rules for knight
     if (piece == (int8_t)PieceType::Knight) {
-        
+        if ((knightmoves.at(fromBitboard) & toBitboard) && !(toBitboard & friendlyPieces)) {
+            return true;
+        }
     }
     
     // Rules for bishop
@@ -111,4 +121,30 @@ bool Rules::isMovingOwnPiece(const int32_t move) {
     } else {
         return board->players[black]->pieceBitboards[piece] & fromBitboard;
     }
+}
+
+map<uint64_t, uint64_t> Rules::generateKnightTable() {
+    map<uint64_t, uint64_t> table;
+    const vector<int8_t> knightMoves = { -10, -17, -15, -6, 6, 10, 15, 17 };
+
+    for (int8_t square = 0; square < 64; square++) {
+        uint64_t moves = 0ULL;
+        int8_t rank = square / 8;
+        int8_t file = square % 8;
+
+        for (int8_t move : knightMoves) {
+            int8_t targetSquare = square + move;
+            int8_t targetRank = targetSquare / 8;
+            int8_t targetFile = targetSquare % 8;
+
+            if (targetSquare >= 0 && targetSquare < 64 &&
+                abs(targetRank - rank) + abs(targetFile - file) == 3) 
+            {
+                moves |= Utils::indexToBitboard(targetSquare);
+            }
+        }
+        table[1LL << square] = moves;
+    }
+
+    return table;
 }
