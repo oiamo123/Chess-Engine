@@ -1,15 +1,26 @@
 #include "./rules.h"
 #include "../Utils/utils.h"
 #include "../Board/board.h"
-#include "./move_generation.h"
+#include "./move_generator.h"
+#include "./ray_generator.h"
 
 using std::unique_ptr;
 
 Rules::Rules(Board* board) {
     this->board = board;
+
+    this->n = RayGenerator::generateNMasks();
+    this->ne = RayGenerator::generateNEMasks();
+    this->e = RayGenerator::generateEMasks();
+    this->se = RayGenerator::generateSEMasks();
+    this->s = RayGenerator::generateSMasks();
+    this->sw = RayGenerator::generateSWMasks();
+    this->w = RayGenerator::generateWMasks();
+    this->nw = RayGenerator::generateNWMasks();
+
     this->knightmoves = MoveGenerator::generateKnightTable();
-    this->bishopmoves = MoveGenerator::generateBishopTable();
-    this->rookmoves = MoveGenerator::generateRookTable();
+    this->bishopmoves = MoveGenerator::generateBishopTable(this->ne, this->se, this->sw, this->nw);
+    this->rookmoves = MoveGenerator::generateRookTable(this->n, this->e, this->s, this->w);
     this->queenmoves = MoveGenerator::generateQueenTable(this->bishopmoves, this->rookmoves);
 }
 
@@ -125,7 +136,4 @@ bool Rules::isMovingOwnPiece(const int32_t move) {
     } else {
         return board->players[black]->pieceBitboards[piece] & fromBitboard;
     }
-}
-
-map<uint64_t, uint64_t> Rules::generateKnightTable() {
 }

@@ -1,4 +1,4 @@
-#include "./move_generation.h"
+#include "./move_generator.h"
 #include "../Utils/utils.h"
 #include <vector>
 
@@ -31,7 +31,12 @@ map<uint64_t, uint64_t> MoveGenerator::generateKnightTable() {
     return table;
 }
 
-map<uint64_t, uint64_t> MoveGenerator::generateBishopTable() {
+map<uint64_t, uint64_t> MoveGenerator::generateBishopTable(
+    const map<uint64_t, uint64_t>& ne,
+    const map<uint64_t, uint64_t>& se,
+    const map<uint64_t, uint64_t>& sw,
+    const map<uint64_t, uint64_t>& nw
+) {
     map<uint64_t, uint64_t> table;
 
     for (int square = 0; square < 64; square++) {
@@ -40,21 +45,10 @@ map<uint64_t, uint64_t> MoveGenerator::generateBishopTable() {
         int file = square % 8;
         uint64_t rays = 0ULL;
 
-        for (int r = rank + 1, f = file + 1; r < 8 && f < 8; r++, f++) {
-            rays |= Utils::indexToBitboard((r * 8 + f));
-        }
-
-        for (int r = rank + 1, f = file - 1; r < 8 && f >= 0; r++, f--) {
-            rays |= Utils::indexToBitboard((r * 8 + f));
-        }
-
-        for (int r = rank - 1, f = file + 1; r >= 0 && f < 8; r--, f++) {
-            rays |= Utils::indexToBitboard((r * 8 + f));
-        }
-
-        for (int r = rank - 1, f = file - 1; r >= 0 && f >= 0; r--, f--) {
-            rays |= Utils::indexToBitboard((r * 8 + f));
-        }
+        rays |= nw.at(from);
+        rays |= sw.at(from);
+        rays |= se.at(from);
+        rays |= ne.at(from);
 
         table[from] = rays;
     }
@@ -62,7 +56,12 @@ map<uint64_t, uint64_t> MoveGenerator::generateBishopTable() {
     return table;
 }
 
-map<uint64_t, uint64_t> MoveGenerator::generateRookTable() {
+map<uint64_t, uint64_t> MoveGenerator::generateRookTable(
+    const map<uint64_t, uint64_t>& n,
+    const map<uint64_t, uint64_t>& e,
+    const map<uint64_t, uint64_t>& s,
+    const map<uint64_t, uint64_t>& w
+) {
     map<uint64_t, uint64_t> table;
 
     for (int square = 0; square < 64; square++) {
@@ -71,21 +70,10 @@ map<uint64_t, uint64_t> MoveGenerator::generateRookTable() {
         int file = square % 8;
         uint64_t rays = 0ULL;
 
-        for (int r = rank + 1; r < 8; r++) {
-            rays |= Utils::indexToBitboard((r * 8 + file));
-        }
-
-        for (int r = rank - 1; r >= 0; r--) {
-            rays |= Utils::indexToBitboard((r * 8 + file));
-        }
-
-        for (int f = file + 1; f < 8; f++) {
-            rays |= Utils::indexToBitboard((rank * 8 + f));
-        }
-
-        for (int f = file - 1; f >= 0; f--) {
-            rays |= Utils::indexToBitboard((rank * 8 + f));
-        }
+        rays |= n.at(from);
+        rays |= e.at(from);
+        rays |= s.at(from);
+        rays |= w.at(from);
 
         table[from] = rays;
     }
@@ -103,6 +91,30 @@ map<uint64_t, uint64_t> MoveGenerator::generateQueenTable(
         uint64_t from = Utils::indexToBitboard(square);
         table[from] = bishopmoves.at(from) | rookmoves.at(from);
     };
+
+    return table;
+}
+
+map<uint64_t, uint64_t> MoveGenerator::generateKingTable(
+    const map<uint64_t, uint64_t>& queenmoves
+) {
+    map<uint64_t, uint64_t> table;
+
+    for (int square = 0; square < 64; square++) {
+        uint64_t from = Utils::indexToBitboard(square);
+        uint64_t mask = 1ULL;
+        
+        mask |= (from << 9);
+        mask |= (from >> 9);
+        mask |= (from << 8);
+        mask |= (from >> 8);
+        mask |= (from << 7);
+        mask |= (from >> 7);
+        mask |= (from << 1);
+        mask |= (from >> 1);
+
+        table[from] = mask & queenmoves.at(from);
+    }
 
     return table;
 }

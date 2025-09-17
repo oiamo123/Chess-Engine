@@ -1,13 +1,12 @@
-FROM ubuntu:22.04
-
+FROM ubuntu:22.04 AS build
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
     build-essential \
-    cmake
+    cmake \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY . .
 
-RUN chmod +x run.sh
-
-ENTRYPOINT ["/app/run.sh"]
+RUN cmake -B build -DCMAKE_BUILD_TYPE=Debug
+RUN cmake --build build
