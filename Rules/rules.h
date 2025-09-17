@@ -18,6 +18,9 @@ public:
 
     Board* board;
     map<uint64_t, uint64_t> knightmoves;
+    map<uint64_t, uint64_t> rookmoves;
+    map<uint64_t, uint64_t> bishopmoves;
+    map<uint64_t, uint64_t> queenmoves;
 
     bool isLegalMove(const int32_t move);
     bool isInCheck();

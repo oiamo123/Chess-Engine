@@ -1,12 +1,16 @@
 #include "./rules.h"
 #include "../Utils/utils.h"
 #include "../Board/board.h"
+#include "./move_generation.h"
 
 using std::unique_ptr;
 
 Rules::Rules(Board* board) {
     this->board = board;
-    this->knightmoves = this->generateKnightTable();
+    this->knightmoves = MoveGenerator::generateKnightTable();
+    this->bishopmoves = MoveGenerator::generateBishopTable();
+    this->rookmoves = MoveGenerator::generateRookTable();
+    this->queenmoves = MoveGenerator::generateQueenTable(this->bishopmoves, this->rookmoves);
 }
 
 bool Rules::isLegalMove(const int32_t move) {
@@ -124,27 +128,4 @@ bool Rules::isMovingOwnPiece(const int32_t move) {
 }
 
 map<uint64_t, uint64_t> Rules::generateKnightTable() {
-    map<uint64_t, uint64_t> table;
-    const vector<int8_t> knightMoves = { -10, -17, -15, -6, 6, 10, 15, 17 };
-
-    for (int8_t square = 0; square < 64; square++) {
-        uint64_t moves = 0ULL;
-        int8_t rank = square / 8;
-        int8_t file = square % 8;
-
-        for (int8_t move : knightMoves) {
-            int8_t targetSquare = square + move;
-            int8_t targetRank = targetSquare / 8;
-            int8_t targetFile = targetSquare % 8;
-
-            if (targetSquare >= 0 && targetSquare < 64 &&
-                abs(targetRank - rank) + abs(targetFile - file) == 3) 
-            {
-                moves |= Utils::indexToBitboard(targetSquare);
-            }
-        }
-        table[1LL << square] = moves;
-    }
-
-    return table;
 }
