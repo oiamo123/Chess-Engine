@@ -118,3 +118,11 @@ array<uint64_t, 64> MoveGenerator::generateKingTable(
 
     return table;
 }
+
+int getRightMostIndex(uint64_t moves) {
+    return __builtin_ctzll(moves);
+}
+
+int getLeftMostIndex(uint64_t moves) {
+    return 63 - __builtin_clzll(moves);
+}

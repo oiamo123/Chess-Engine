@@ -32,6 +32,9 @@ class MoveGenerator {
     static array<uint64_t, 64> generateKingTable(
         const array<uint64_t, 64>& queenmoves
     );
+
+    static uint64_t getRightMostBit(const uint64_t moves);
+    static uint64_t getLeftMostBit(const uint64_t moves);
 };
 
 #endif
