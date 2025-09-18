@@ -1,7 +1,8 @@
 #include "./rook.h"
+using std::uint32_t;
 
-vector<int32_t> Rook::getMoves() {
-    const vector<int32_t> moves;
+vector<uint32_t> Rook::getMoves() {
+    const vector<uint32_t> moves;
 
     
 

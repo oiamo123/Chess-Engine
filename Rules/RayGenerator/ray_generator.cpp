@@ -1,11 +1,12 @@
 #include "./ray_generator.h"
-#include "../Utils/utils.h"
+#include "../../Utils/utils.h"
+using std::uint8_t;
+using std::uint64_t;
 
-map<uint64_t, uint64_t> RayGenerator::generateNMasks() {
-    map<uint64_t, uint64_t> table;
+array<uint64_t, 64> RayGenerator::generateNMasks() {
+    array<uint64_t, 64> table;
     
-    for (int8_t square = 0; square < 64; square++) {
-        uint64_t from = 1ULL << square;
+    for (uint8_t square = 0; square < 64; square++) {
         uint64_t moves = 0ULL;
 
         const int rank = square / 8;
@@ -16,17 +17,16 @@ map<uint64_t, uint64_t> RayGenerator::generateNMasks() {
             moves |= Utils::indexToBitboard(targetSquare);
         }
 
-        table[from] = moves;
+        table[square] = moves;
     }
 
     return table;
 }
 
-map<uint64_t, uint64_t> RayGenerator::generateNEMasks() {
-    map<uint64_t, uint64_t> table;
+array<uint64_t, 64> RayGenerator::generateNEMasks() {
+    array<uint64_t, 64> table;
 
-    for (int8_t square = 0; square < 64; square++) {
-        uint64_t from = 1ULL << square;
+    for (uint8_t square = 0; square < 64; square++) {
         uint64_t moves = 0ULL;
 
         int r = square / 8;
@@ -42,18 +42,17 @@ map<uint64_t, uint64_t> RayGenerator::generateNEMasks() {
             ff++;
         }
 
-        table[from] = moves;
+        table[square] = moves;
     }
 
     return table;
 }
 
-map<uint64_t, uint64_t> RayGenerator::generateEMasks() {
+array<uint64_t, 64> RayGenerator::generateEMasks() {
     
-    map<uint64_t, uint64_t> table;
+    array<uint64_t, 64> table;
     
-    for (int8_t square = 0; square < 64; square++) {
-        uint64_t from = 1ULL << square;
+    for (uint8_t square = 0; square < 64; square++) {
         uint64_t moves = 0ULL;
 
         const int rank = square / 8;
@@ -64,17 +63,16 @@ map<uint64_t, uint64_t> RayGenerator::generateEMasks() {
             moves |= Utils::indexToBitboard(targetSquare);
         }
 
-        table[from] = moves;
+        table[square] = moves;
     }
 
     return table;
 }
 
-map<uint64_t, uint64_t> RayGenerator::generateSEMasks() {
-    map<uint64_t, uint64_t> table;
+array<uint64_t, 64> RayGenerator::generateSEMasks() {
+    array<uint64_t, 64> table;
 
-    for (int8_t square = 0; square < 64; square++) {
-        uint64_t from = 1ULL << square;
+    for (uint8_t square = 0; square < 64; square++) {
         uint64_t moves = 0ULL;
 
         int r = square / 8;
@@ -90,17 +88,16 @@ map<uint64_t, uint64_t> RayGenerator::generateSEMasks() {
             ff++;  
         }
 
-        table[from] = moves;
+        table[square] = moves;
     }
 
     return table;
 }
 
-map<uint64_t, uint64_t> RayGenerator::generateSMasks() {
-    map<uint64_t, uint64_t> table;
+array<uint64_t, 64> RayGenerator::generateSMasks() {
+    array<uint64_t, 64> table;
     
-    for (int8_t square = 0; square < 64; square++) {
-        uint64_t from = 1ULL << square;
+    for (uint8_t square = 0; square < 64; square++) {
         uint64_t moves = 0ULL;
 
         const int rank = square / 8;
@@ -111,17 +108,16 @@ map<uint64_t, uint64_t> RayGenerator::generateSMasks() {
             moves |= Utils::indexToBitboard(targetSquare);
         }
 
-        table[from] = moves;
+        table[square] = moves;
     }
 
     return table;
 }
 
-map<uint64_t, uint64_t> RayGenerator::generateSWMasks() {
-    map<uint64_t, uint64_t> table;
+array<uint64_t, 64> RayGenerator::generateSWMasks() {
+    array<uint64_t, 64> table;
 
-    for (int8_t square = 0; square < 64; square++) {
-        uint64_t from = 1ULL << square;
+    for (uint8_t square = 0; square < 64; square++) {
         uint64_t moves = 0ULL;
 
         int r = square / 8;
@@ -137,18 +133,17 @@ map<uint64_t, uint64_t> RayGenerator::generateSWMasks() {
             ff--;  
         }
 
-        table[from] = moves;
+        table[square] = moves;
     }
 
     return table;
 }
 
-map<uint64_t, uint64_t> RayGenerator::generateWMasks() {
+array<uint64_t, 64> RayGenerator::generateWMasks() {
     
-    map<uint64_t, uint64_t> table;
+    array<uint64_t, 64> table;
     
-    for (int8_t square = 0; square < 64; square++) {
-        uint64_t from = 1ULL << square;
+    for (uint8_t square = 0; square < 64; square++) {
         uint64_t moves = 0ULL;
 
         const int rank = square / 8;
@@ -159,17 +154,16 @@ map<uint64_t, uint64_t> RayGenerator::generateWMasks() {
             moves |= Utils::indexToBitboard(targetSquare);
         }
 
-        table[from] = moves;
+        table[square] = moves;
     }
 
     return table;
 }
 
-map<uint64_t, uint64_t> RayGenerator::generateNWMasks() {
-    map<uint64_t, uint64_t> table;
+array<uint64_t, 64> RayGenerator::generateNWMasks() {
+    array<uint64_t, 64> table;
 
-    for (int8_t square = 0; square < 64; square++) {
-        uint64_t from = 1ULL << square;
+    for (uint8_t square = 0; square < 64; square++) {
         uint64_t moves = 0ULL;
 
         int r = square / 8;
@@ -185,7 +179,7 @@ map<uint64_t, uint64_t> RayGenerator::generateNWMasks() {
             ff--;  
         }
 
-        table[from] = moves;
+        table[square] = moves;
     }
 
     return table;

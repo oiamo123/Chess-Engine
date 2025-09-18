@@ -26,8 +26,8 @@ constexpr uint64_t RANK_6 = RANK_1 << (8 * 5);
 constexpr uint64_t RANK_7 = RANK_1 << (8 * 6);
 constexpr uint64_t RANK_8 = RANK_1 << (8 * 7);
 
-enum class PieceType : int8_t {
-    Pawn,
+enum class PieceType : uint8_t {
+    Pawn = 0,
     Knight,
     Bishop,
     Rook,
@@ -36,7 +36,7 @@ enum class PieceType : int8_t {
     Count
 };
 
-enum class Color : int8_t {
+enum class Color : uint8_t {
     White,
     Black
 };

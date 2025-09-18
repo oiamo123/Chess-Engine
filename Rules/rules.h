@@ -1,14 +1,12 @@
 #ifndef RULES_H
 #define RULES_H
 
-#include "../Player/player.h"
 #include <array>
-#include <memory>
-#include <map>
-#include <vector>
+#include <cstdint>
 
-using std::map;
-using std::vector;
+using std::uint32_t;
+using std::uint64_t;
+using std::array;
 
 class Board;
 
@@ -18,26 +16,26 @@ public:
 
     Board* board;
 
-    map<uint64_t, uint64_t> n;
-    map<uint64_t, uint64_t> ne;
-    map<uint64_t, uint64_t> e;
-    map<uint64_t, uint64_t> se;
-    map<uint64_t, uint64_t> s;
-    map<uint64_t, uint64_t> sw;
-    map<uint64_t, uint64_t> w;
-    map<uint64_t, uint64_t> nw;
+    array<uint64_t, 64> n;
+    array<uint64_t, 64> ne;
+    array<uint64_t, 64> e;
+    array<uint64_t, 64> se;
+    array<uint64_t, 64> s;
+    array<uint64_t, 64> sw;
+    array<uint64_t, 64> w;
+    array<uint64_t, 64> nw;
 
-    map<uint64_t, uint64_t> knightmoves;
-    map<uint64_t, uint64_t> rookmoves;
-    map<uint64_t, uint64_t> bishopmoves;
-    map<uint64_t, uint64_t> queenmoves;
+    array<uint64_t, 64> knightmoves;
+    array<uint64_t, 64> rookmoves;
+    array<uint64_t, 64> bishopmoves;
+    array<uint64_t, 64> queenmoves;
 
-    bool isLegalMove(const int32_t move);
+    bool isLegalMove(const uint32_t move);
     bool isInCheck();
     bool isInCheckmate();
     bool isInStalemate();
     bool isDraw();
-    bool isMovingOwnPiece(const int32_t move);
+    bool isMovingOwnPiece(const uint32_t move);
 };
 
 #endif

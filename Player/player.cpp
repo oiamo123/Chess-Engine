@@ -1,13 +1,15 @@
 #include "player.h"
+using std::uint8_t;
+using std::uint64_t;
 
-Player::Player(
-    int8_t color,
-    uint64_t rooks,
-    uint64_t knights,
-    uint64_t bishops,
-    uint64_t pawns,
-    uint64_t queen,
-    uint64_t king
+void Player::setPosition(
+        uint8_t color,
+        uint64_t rooks,
+        uint64_t knights,
+        uint64_t bishops,
+        uint64_t pawns,
+        uint64_t queen,
+        uint64_t king
 ) {
     this->color = color;
     pieceBitboards.fill(0ULL);
@@ -19,7 +21,7 @@ Player::Player(
     pieceBitboards[(int)PieceType::King]   = king;
 }
 
-uint64_t Player::getAllPieces() const {
+uint64_t Player::getAllPieces() {
     uint64_t all = 0ULL;
     for (int i = 0; i < (int)PieceType::Count; ++i) all |= pieceBitboards[i];
     return all;

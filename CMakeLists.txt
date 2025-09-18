@@ -14,7 +14,8 @@ set(SOURCES
     Player/player.cpp
     Pieces/Piece/piece.cpp
     Rules/rules.cpp
-    Rules/move_generator.cpp
+    Rules/RayGenerator/ray_generator.cpp
+    Rules/MoveGenerator/move_generator.cpp
 )
 
 add_executable(chess ${SOURCES})

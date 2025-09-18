@@ -10,3 +10,5 @@ COPY . .
 
 RUN cmake -B build -DCMAKE_BUILD_TYPE=Debug
 RUN cmake --build build
+
+CMD ["./build/chess"]
