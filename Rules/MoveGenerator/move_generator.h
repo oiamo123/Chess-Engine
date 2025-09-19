@@ -9,32 +9,30 @@ using std::array;
 
 class MoveGenerator {
     public:
-    static array<uint64_t, 64> generateKnightTable();
-    static array<uint64_t, 64> generateBishopTable(
-        const array<uint64_t, 64>& ne,
-        const array<uint64_t, 64>& se,
-        const array<uint64_t, 64>& sw,
-        const array<uint64_t, 64>& nw
-    );
+    MoveGenerator();
+    uint64_t generateKnightMoves(const uint8_t from);
+    uint64_t generateBishopMoves(const uint8_t from, const uint64_t opponentPieces, const uint64_t friendlyPieces);
+    uint64_t generateRookMoves(const uint8_t from, const uint64_t opponentPieces, const uint64_t friendlyPieces);
+    uint64_t generateQueenMoves(const uint8_t from, const uint64_t opponentPieces, const uint64_t friendlyPieces);
+    uint64_t generateKingMoves(const uint8_t from, const uint64_t opponentPieces, const uint64_t friendlyPieces);
+    
+    private:
+    array<uint64_t, 64> n;
+    array<uint64_t, 64> ne;
+    array<uint64_t, 64> e;
+    array<uint64_t, 64> se;
+    array<uint64_t, 64> s;
+    array<uint64_t, 64> sw;
+    array<uint64_t, 64> w;
+    array<uint64_t, 64> nw;
+    
+    array<uint64_t, 64> knightmoves;
+    array<uint64_t, 64> generateKnightTable();
 
-    static array<uint64_t, 64> generateRookTable(
-        const array<uint64_t, 64>& n,
-        const array<uint64_t, 64>& e,
-        const array<uint64_t, 64>& s,
-        const array<uint64_t, 64>& w
-    );
-
-    static array<uint64_t, 64> generateQueenTable(
-        const array<uint64_t, 64>& bishopmoves, 
-        const array<uint64_t, 64>& rookmoves
-    );
-
-    static array<uint64_t, 64> generateKingTable(
-        const array<uint64_t, 64>& queenmoves
-    );
-
-    static uint64_t getRightMostBit(const uint64_t moves);
-    static uint64_t getLeftMostBit(const uint64_t moves);
+    uint64_t maskRayAfterBlocker(const uint64_t ray, const uint64_t blocker, const uint8_t dir);
+    uint64_t getBlocker(const uint64_t bitboard, uint8_t direction);
+    uint64_t getRightMostBit(const uint64_t bitboard);
+    uint64_t getLeftMostBit(const uint64_t bitboard);
 };
 
 #endif

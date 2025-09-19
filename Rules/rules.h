@@ -9,26 +9,13 @@ using std::uint64_t;
 using std::array;
 
 class Board;
+class MoveGenerator;
 
 class Rules {
 public:
     Rules(Board* board);
-
     Board* board;
-
-    array<uint64_t, 64> n;
-    array<uint64_t, 64> ne;
-    array<uint64_t, 64> e;
-    array<uint64_t, 64> se;
-    array<uint64_t, 64> s;
-    array<uint64_t, 64> sw;
-    array<uint64_t, 64> w;
-    array<uint64_t, 64> nw;
-
-    array<uint64_t, 64> knightmoves;
-    array<uint64_t, 64> rookmoves;
-    array<uint64_t, 64> bishopmoves;
-    array<uint64_t, 64> queenmoves;
+    MoveGenerator moveGenerator;
 
     bool isLegalMove(const uint32_t move);
     bool isInCheck();
@@ -36,6 +23,7 @@ public:
     bool isInStalemate();
     bool isDraw();
     bool isMovingOwnPiece(const uint32_t move);
+    uint64_t getMoves(const uint32_t moves);
 };
 
 #endif

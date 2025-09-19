@@ -1,7 +1,6 @@
 #include <iostream>
-#include "./Board/board.h"
 #include "./Utils/utils.h"
-#include "./Pieces/Piece/piece.h"
+#include "./Rules/MoveGenerator/move_generator.h"
 
 using std::cout;
 using std::endl;
@@ -9,19 +8,12 @@ using std::uint8_t;
 using std::uint32_t;
 
 int main() {
-    Board board;
-    board.create();
-    board.display();
+    MoveGenerator moveGenerator = MoveGenerator();
+    // const array<uint64_t, 64> knightMoves = moveGenerator.generateKnightTable();
 
-    const uint32_t move = Utils::createMove(
-        (uint8_t)PieceType::Pawn, 
-        (uint8_t)Color::White, 
-        (uint8_t)Square::E2, 
-        (uint8_t)Square::E4
-    );
-
-    board.move(move);
-    board.display();
+    // for (int8_t i = 0; i < 63; i++) {
+    //     Utils::printBitboard(knightMoves[i] | (1ULL << i));
+    // }
 
     return 0;
 }

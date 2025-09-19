@@ -52,4 +52,15 @@ enum class Square : uint8_t {
     A8, B8, C8, D8, E8, F8, G8, H8
 };
 
+enum class Direction : uint8_t {
+    N,
+    NE,
+    E,
+    SE,
+    S,
+    SW,
+    W,
+    NW
+};
+
 #endif

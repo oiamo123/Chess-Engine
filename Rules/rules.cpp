@@ -9,36 +9,7 @@ using std::uint16_t;
 using std::uint64_t;
 using std::array;
 
-Rules::Rules(Board* board) : board(board) {
-    const array<uint64_t, 64> n = RayGenerator::generateNMasks();
-    const array<uint64_t, 64> ne = RayGenerator::generateNEMasks();
-    const array<uint64_t, 64> e = RayGenerator::generateEMasks();
-    const array<uint64_t, 64> se = RayGenerator::generateSEMasks();
-    const array<uint64_t, 64> s = RayGenerator::generateSMasks();
-    const array<uint64_t, 64> sw = RayGenerator::generateSWMasks();
-    const array<uint64_t, 64> w = RayGenerator::generateWMasks();
-    const array<uint64_t, 64> nw = RayGenerator::generateNWMasks();
-
-    const array<uint64_t, 64> knightmoves = MoveGenerator::generateKnightTable();
-    const array<uint64_t, 64> bishopmoves = MoveGenerator::generateBishopTable(
-        this->ne, 
-        this->se, 
-        this->sw, 
-        this->nw
-    );
-    
-    const array<uint64_t, 64> rookmoves = MoveGenerator::generateRookTable(
-        this->n, 
-        this->e, 
-        this->s, 
-        this->w
-    );
-    
-    const array<uint64_t, 64> queenmoves = MoveGenerator::generateQueenTable(
-        this->bishopmoves, 
-        this->rookmoves
-    );
-}
+Rules::Rules(Board* board) : board(board), moveGenerator() {}
 
 bool Rules::isLegalMove(const uint32_t move) {
     array<Player, 2>& players = board->players;
@@ -99,30 +70,20 @@ bool Rules::isLegalMove(const uint32_t move) {
 
     // Rules for knight
     if (piece == (uint8_t)PieceType::Knight) {
-        if ((knightmoves.at(fromBitboard) & toBitboard) && !(toBitboard & friendlyPieces)) {
+        if ((getMoves(move) & toBitboard) && !(toBitboard & friendlyPieces)) {
             return true;
         }
-    }
-    
-    // Rules for bishop
-    if (piece == (uint8_t)PieceType::Bishop) {
-    }
-    
-    // Rules for rook
-    if (piece == (uint8_t)PieceType::Rook) {
-    }
-    
-    // Rules for queen
-    if (piece == (uint8_t)PieceType::Queen) {
     }
     
     // Rules for king
     if (piece == (uint8_t)PieceType::King) {
     }
 
-    // Make move, check if king is in check, undo move
 
-    return true;
+    // Otherwise it's a sliding piece and it either can or cannot move there. We just have to check if it puts the king in check
+    getMoves(move) & toBitboard;
+
+    return ;
 }
 
 bool Rules::isInCheck() {
@@ -152,5 +113,27 @@ bool Rules::isMovingOwnPiece(const uint32_t move) {
         return board->players[white].pieceBitboards[piece] & fromBitboard;
     } else {
         return board->players[black].pieceBitboards[piece] & fromBitboard;
+    }
+}
+
+uint64_t Rules::getMoves(const uint32_t move) {
+    auto [piece, color, from, to] = Utils::parseMove(move);
+    uint8_t opponentColor = color == (uint8_t)Color::White ? (uint8_t)Color::White : (uint8_t)Color::Black;
+    uint64_t opponentPieces = board->players[opponentColor].getAllPieces();
+    uint64_t friendlyPieces = board->players[color].getAllPieces();
+
+    switch (piece) {
+        case (uint8_t)PieceType::Knight: 
+            return moveGenerator.generateKnightMoves(from);
+        case (uint8_t)PieceType::Bishop: 
+            return moveGenerator.generateBishopMoves(from, opponentPieces, friendlyPieces);
+        case (uint8_t)PieceType::Rook: 
+            return moveGenerator.generateRookMoves(from, opponentPieces, friendlyPieces);
+        case (uint8_t)PieceType::Queen: 
+            return moveGenerator.generateQueenMoves(from, opponentPieces, friendlyPieces);
+        case (uint8_t)PieceType::King: 
+            return moveGenerator.generateKingMoves(from, opponentPieces, friendlyPieces);
+        default: 
+            return 0ULL;
     }
 }

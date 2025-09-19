@@ -9,11 +9,11 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 set(SOURCES
     main.cpp
-    Board/board.cpp
+    # Board/board.cpp
     Utils/utils.cpp
     Player/player.cpp
     Pieces/Piece/piece.cpp
-    Rules/rules.cpp
+    # Rules/rules.cpp
     Rules/RayGenerator/ray_generator.cpp
     Rules/MoveGenerator/move_generator.cpp
 )
