@@ -6,7 +6,7 @@ using std::uint64_t;
 array<uint64_t, 64> RayGenerator::generateNMasks() {
     array<uint64_t, 64> table;
     
-    for (uint8_t square = 0; square < 63; square++) {
+    for (uint8_t square = 0; square < 64; square++) {
         uint64_t moves = 0ULL;
 
         const int rank = square / 8;
@@ -26,7 +26,7 @@ array<uint64_t, 64> RayGenerator::generateNMasks() {
 array<uint64_t, 64> RayGenerator::generateNEMasks() {
     array<uint64_t, 64> table;
 
-    for (uint8_t square = 0; square < 63; square++) {
+    for (uint8_t square = 0; square < 64; square++) {
         uint64_t moves = 0ULL;
 
         int r = square / 8;
@@ -49,10 +49,9 @@ array<uint64_t, 64> RayGenerator::generateNEMasks() {
 }
 
 array<uint64_t, 64> RayGenerator::generateEMasks() {
-    
     array<uint64_t, 64> table;
     
-    for (uint8_t square = 0; square < 63; square++) {
+    for (uint8_t square = 0; square < 64; square++) {
         uint64_t moves = 0ULL;
 
         const int rank = square / 8;
@@ -72,7 +71,7 @@ array<uint64_t, 64> RayGenerator::generateEMasks() {
 array<uint64_t, 64> RayGenerator::generateSEMasks() {
     array<uint64_t, 64> table;
 
-    for (uint8_t square = 0; square < 63; square++) {
+    for (uint8_t square = 0; square < 64; square++) {
         uint64_t moves = 0ULL;
 
         int r = square / 8;
@@ -97,7 +96,7 @@ array<uint64_t, 64> RayGenerator::generateSEMasks() {
 array<uint64_t, 64> RayGenerator::generateSMasks() {
     array<uint64_t, 64> table;
     
-    for (uint8_t square = 0; square < 63; square++) {
+    for (uint8_t square = 0; square < 64; square++) {
         uint64_t moves = 0ULL;
 
         const int rank = square / 8;
@@ -117,7 +116,7 @@ array<uint64_t, 64> RayGenerator::generateSMasks() {
 array<uint64_t, 64> RayGenerator::generateSWMasks() {
     array<uint64_t, 64> table;
 
-    for (uint8_t square = 0; square < 63; square++) {
+    for (uint8_t square = 0; square < 64; square++) {
         uint64_t moves = 0ULL;
 
         int r = square / 8;
@@ -143,7 +142,7 @@ array<uint64_t, 64> RayGenerator::generateWMasks() {
     
     array<uint64_t, 64> table;
     
-    for (uint8_t square = 0; square < 63; square++) {
+    for (uint8_t square = 0; square < 64; square++) {
         uint64_t moves = 0ULL;
 
         const int rank = square / 8;
@@ -163,7 +162,7 @@ array<uint64_t, 64> RayGenerator::generateWMasks() {
 array<uint64_t, 64> RayGenerator::generateNWMasks() {
     array<uint64_t, 64> table;
 
-    for (uint8_t square = 0; square < 63; square++) {
+    for (uint8_t square = 0; square < 64; square++) {
         uint64_t moves = 0ULL;
 
         int r = square / 8;

@@ -3,6 +3,7 @@
 #include "../../Utils/utils.h"
 #include "../../Utils/global.h"
 #include <array>
+#include <iostream>
 
 using std::int8_t;
 using std::uint8_t;
@@ -10,7 +11,6 @@ using std::uint64_t;
 using std::array;
 
 MoveGenerator::MoveGenerator() {
-    array<array<uint64_t, 64>, 8> rays; 
     rays[(uint8_t)Direction::N] = RayGenerator::generateNMasks(); 
     rays[(uint8_t)Direction::NE] = RayGenerator::generateNEMasks();
     rays[(uint8_t)Direction::E] = RayGenerator::generateEMasks();
@@ -19,6 +19,7 @@ MoveGenerator::MoveGenerator() {
     rays[(uint8_t)Direction::SW] = RayGenerator::generateSWMasks();
     rays[(uint8_t)Direction::W] = RayGenerator::generateWMasks();
     rays[(uint8_t)Direction::NW] = RayGenerator::generateNWMasks();
+    n = RayGenerator::generateNMasks();
 
     const array<uint64_t, 64> knightmoves = MoveGenerator::generateKnightTable();
     const array<uint64_t, 64> kingmoves = MoveGenerator::generateKingTable();
@@ -35,6 +36,7 @@ All sliding pieces work on the exact same concept. But basically:
 2. Take the opponent pieces and friendly pieces, and & them with the valid rays for that piece so Bishop -> NE, SE, SW, NW
 3. Depending on the direction, the blocking piece will either be the biggest index or the smallest index, or in other words left most (lmb) or right most bit (rmb)
 4. We can take the lmb or rmb, and create a mask so that either everything to the left or right of that bit is masked off, removing invalid moves in that direction.
+-> https://goiamo.dev/notes/chess-engines/move-generation
 */
 
 uint64_t MoveGenerator::generateBishopMoves(
@@ -45,7 +47,7 @@ uint64_t MoveGenerator::generateBishopMoves(
     uint64_t moves = 0ULL;
     array<Direction, 4> directions = { 
         Direction::NE, 
-        Direction::SE, 
+        Direction::SE,
         Direction::SW, 
         Direction::NW 
     };
@@ -82,7 +84,10 @@ uint64_t MoveGenerator::generateQueenMoves(
     const uint64_t opponentPieces, 
     const uint64_t friendlyPieces
 ) {
-    return generateRookMoves(from, opponentPieces, friendlyPieces) | generateBishopMoves(from, opponentPieces, friendlyPieces);
+    uint64_t queenmoves = 0ULL;
+    queenmoves |= generateRookMoves(from, opponentPieces, friendlyPieces);
+    queenmoves |= generateBishopMoves(from, opponentPieces, friendlyPieces);
+    return queenmoves;
 }
 
 uint64_t MoveGenerator::generateKingMoves(
@@ -144,35 +149,34 @@ array<uint64_t, 64> MoveGenerator::generateKnightTable() {
 
 // Gets the right most or left most bit
 uint64_t MoveGenerator::nearestBlocker(const Direction direction, const uint64_t bitboard) {
-    if (!bitboard) return 0ULL;
-
     switch (direction) {
         case Direction::N:
         case Direction::NE:
-        case Direction::NW:
-        case Direction::W:
+        case Direction::E:
+        case Direction::SE:
             return getRightMostBit(bitboard);
 
         case Direction::S:
-        case Direction::SE:
         case Direction::SW:
-        case Direction::E:
+        case Direction::W:
+        case Direction::NW:
             return getLeftMostBit(bitboard);
     }
+    
     return 0ULL;
 }
 
 // Corrections for friendly pieces
 uint64_t MoveGenerator::beyondBlocker(const Direction direction, const uint64_t blocker) {
     switch (direction) {
-        case Direction::N:  return blocker >> 8;
-        case Direction::NE: return blocker >> 7;
-        case Direction::E:  return blocker << 1;
-        case Direction::SE: return blocker << 9;
-        case Direction::S:  return blocker << 8;
-        case Direction::SW: return blocker << 7;
-        case Direction::W:  return blocker >> 1;
-        case Direction::NW: return blocker >> 9;
+        case Direction::N:  return blocker >> 8; 
+        case Direction::NE: return blocker >> 9; 
+        case Direction::E:  return blocker >> 1; 
+        case Direction::SE: return blocker << 7; 
+        case Direction::S:  return blocker << 8; 
+        case Direction::SW: return blocker << 9; 
+        case Direction::W:  return blocker << 1; 
+        case Direction::NW: return blocker >> 7; 
     }
     return 0ULL;
 }
@@ -185,42 +189,43 @@ uint64_t MoveGenerator::getLegalMovesForRay(
     uint64_t friendlyPieces
 ) {
     uint64_t ray = rays[(uint8_t)direction][from];
-
     uint64_t opponentBlocker = nearestBlocker(direction, ray & opponentPieces);
     uint64_t friendlyBlocker = beyondBlocker(direction, nearestBlocker(direction, ray & friendlyPieces));
-
     uint64_t combinedBlocker = opponentBlocker | friendlyBlocker;
 
     if (!combinedBlocker) {
         return ray;
     }
 
-    uint8_t blockerIndex = Utils::bitboardToIndex(combinedBlocker);
+    uint64_t blocker = nearestBlocker(direction, combinedBlocker);
 
-    uint64_t mask = 0ULL;
+    if (!blocker) return ray;
+
+    int blockerIndex = Utils::bitboardToIndex(blocker);
+
     switch (direction) {
         case Direction::N:
         case Direction::NE:
-        case Direction::NW:
-        case Direction::W:
-            mask = ray & (~0ULL >> (63 - blockerIndex));
-            break;
-
-        case Direction::S:
-        case Direction::SE:
-        case Direction::SW:
         case Direction::E:
-            mask = ray & ((1ULL << (blockerIndex + 1)) - 1);
-            break;
+        case Direction::NW:
+            return ray & ((blocker - 1) | blocker);
+        
+        case Direction::SE:
+        case Direction::S:
+        case Direction::SW:
+        case Direction::W:
+            return ray & ~(blocker - 1);
     }
-
-    return mask;
+    
+    return 0ULL;
 }
 
 uint64_t MoveGenerator::getRightMostBit(uint64_t bitboard) {
-    return 1ULL << Utils::bitboardToIndex(bitboard);
+    return bitboard & -bitboard;
 }
 
 uint64_t MoveGenerator::getLeftMostBit(uint64_t bitboard) {
-    return 1ULL << (63 - Utils::bitboardToIndex(bitboard));
+    if (bitboard == 0) return 0ULL;
+    int index = 63 - __builtin_clzll(bitboard);
+    return 1ULL << index;
 }

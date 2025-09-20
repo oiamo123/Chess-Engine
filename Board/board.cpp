@@ -61,18 +61,18 @@ void Board::display() {
             uint64_t mask = 1LL << square;
             string pieceChar = ".";
 
-            if (players[(uint8_t)Color::White].pieceBitboards[(int)PieceType::Pawn] & mask) pieceChar = "♙";
-            else if (players[(uint8_t)Color::White].pieceBitboards[(int)PieceType::Rook] & mask) pieceChar = "♖";
-            else if (players[(uint8_t)Color::White].pieceBitboards[(int)PieceType::Knight] & mask) pieceChar = "♘";
-            else if (players[(uint8_t)Color::White].pieceBitboards[(int)PieceType::Bishop] & mask) pieceChar = "♗";
-            else if (players[(uint8_t)Color::White].pieceBitboards[(int)PieceType::Queen] & mask) pieceChar = "♕";
-            else if (players[(uint8_t)Color::White].pieceBitboards[(int)PieceType::King] & mask) pieceChar = "♔";
-            else if (players[(uint8_t)Color::Black].pieceBitboards[(int)PieceType::Pawn] & mask) pieceChar = "♟";
-            else if (players[(uint8_t)Color::Black].pieceBitboards[(int)PieceType::Rook] & mask) pieceChar = "♜";
-            else if (players[(uint8_t)Color::Black].pieceBitboards[(int)PieceType::Knight] & mask) pieceChar = "♞";
-            else if (players[(uint8_t)Color::Black].pieceBitboards[(int)PieceType::Bishop] & mask) pieceChar = "♝";
-            else if (players[(uint8_t)Color::Black].pieceBitboards[(int)PieceType::Queen] & mask) pieceChar = "♛";
-            else if (players[(uint8_t)Color::Black].pieceBitboards[(int)PieceType::King] & mask) pieceChar = "♚";
+            if (players[(uint8_t)Color::Black].pieceBitboards[(int)PieceType::Pawn] & mask) pieceChar = "♙";
+            else if (players[(uint8_t)Color::Black].pieceBitboards[(int)PieceType::Rook] & mask) pieceChar = "♖";
+            else if (players[(uint8_t)Color::Black].pieceBitboards[(int)PieceType::Knight] & mask) pieceChar = "♘";
+            else if (players[(uint8_t)Color::Black].pieceBitboards[(int)PieceType::Bishop] & mask) pieceChar = "♗";
+            else if (players[(uint8_t)Color::Black].pieceBitboards[(int)PieceType::Queen] & mask) pieceChar = "♕";
+            else if (players[(uint8_t)Color::Black].pieceBitboards[(int)PieceType::King] & mask) pieceChar = "♔";
+            else if (players[(uint8_t)Color::White].pieceBitboards[(int)PieceType::Pawn] & mask) pieceChar = "♟";
+            else if (players[(uint8_t)Color::White].pieceBitboards[(int)PieceType::Rook] & mask) pieceChar = "♜";
+            else if (players[(uint8_t)Color::White].pieceBitboards[(int)PieceType::Knight] & mask) pieceChar = "♞";
+            else if (players[(uint8_t)Color::White].pieceBitboards[(int)PieceType::Bishop] & mask) pieceChar = "♝";
+            else if (players[(uint8_t)Color::White].pieceBitboards[(int)PieceType::Queen] & mask) pieceChar = "♛";
+            else if (players[(uint8_t)Color::White].pieceBitboards[(int)PieceType::King] & mask) pieceChar = "♚";
 
             cout << pieceChar << " ";
         }
@@ -88,7 +88,6 @@ void Board::move(uint32_t move) {
 
     Player& player = players[color];
 
-    // Update specific piece type
     player.pieceBitboards[piece] &= ~fromMask;
     player.pieceBitboards[piece] |= toMask;
 }

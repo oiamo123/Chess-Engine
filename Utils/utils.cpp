@@ -7,6 +7,19 @@ using std::endl;
 using std::string;
 using std::uint8_t;
 
+string Utils::getDirection(const uint8_t direction) {
+    switch (direction) {
+        case static_cast<uint8_t>(Direction::N): return "North";
+        case static_cast<uint8_t>(Direction::NE): return "North East";
+        case static_cast<uint8_t>(Direction::E): return "East";
+        case static_cast<uint8_t>(Direction::SE): return "South East";
+        case static_cast<uint8_t>(Direction::S): return "South";
+        case static_cast<uint8_t>(Direction::SW): return "South West";
+        case static_cast<uint8_t>(Direction::W): return "West";
+        case static_cast<uint8_t>(Direction::NW): return "North West";
+    }
+}
+
 string Utils::getType(const uint8_t type) {
     switch (type) {
         case static_cast<uint8_t>(PieceType::Pawn): return "Pawn";

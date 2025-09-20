@@ -12,6 +12,7 @@ using std::tuple;
 
 class Utils {
     public:
+        static string getDirection(const uint8_t direction);
         static string getType(const uint8_t type);
         static string getColor(const uint8_t color);
         static string getSquare(const uint64_t square);

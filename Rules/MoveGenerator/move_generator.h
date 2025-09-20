@@ -16,9 +16,10 @@ class MoveGenerator {
     uint64_t generateRookMoves(const uint8_t from, const uint64_t opponentPieces, const uint64_t friendlyPieces);
     uint64_t generateQueenMoves(const uint8_t from, const uint64_t opponentPieces, const uint64_t friendlyPieces);
     uint64_t generateKingMoves(const uint8_t from, const uint64_t friendlyPieces);
+    array<array<uint64_t, 64>, 8> rays;     
+    array<uint64_t, 64> n;
     
     private:
-    array<array<uint64_t, 64>, 8> rays;     
     array<uint64_t, 64> knightmoves;
     array<uint64_t, 64> kingmoves;
     
