@@ -15,7 +15,7 @@ class Rules {
 public:
     Rules(Board* board);
     Board* board;
-    MoveGenerator moveGenerator;
+    MoveGenerator* moveGenerator;
 
     bool isLegalMove(const uint32_t move);
     bool isInCheck();

@@ -81,9 +81,9 @@ bool Rules::isLegalMove(const uint32_t move) {
 
 
     // Otherwise it's a sliding piece and it either can or cannot move there. We just have to check if it puts the king in check
-    getMoves(move) & toBitboard;
+    // getMoves(move) & toBitboard;
 
-    return ;
+    return true;
 }
 
 bool Rules::isInCheck() {
@@ -124,15 +124,15 @@ uint64_t Rules::getMoves(const uint32_t move) {
 
     switch (piece) {
         case (uint8_t)PieceType::Knight: 
-            return moveGenerator.generateKnightMoves(from);
+            return moveGenerator->generateKnightMoves(from);
         case (uint8_t)PieceType::Bishop: 
-            return moveGenerator.generateBishopMoves(from, opponentPieces, friendlyPieces);
+            return moveGenerator->generateBishopMoves(from, opponentPieces, friendlyPieces);
         case (uint8_t)PieceType::Rook: 
-            return moveGenerator.generateRookMoves(from, opponentPieces, friendlyPieces);
+            return moveGenerator->generateRookMoves(from, opponentPieces, friendlyPieces);
         case (uint8_t)PieceType::Queen: 
-            return moveGenerator.generateQueenMoves(from, opponentPieces, friendlyPieces);
+            return moveGenerator->generateQueenMoves(from, opponentPieces, friendlyPieces);
         case (uint8_t)PieceType::King: 
-            return moveGenerator.generateKingMoves(from, opponentPieces, friendlyPieces);
+            return moveGenerator->generateKingMoves(from, friendlyPieces);
         default: 
             return 0ULL;
     }

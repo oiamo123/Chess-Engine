@@ -58,6 +58,10 @@ uint64_t Utils::indexToBitboard(const uint8_t index) {
     return 1ULL << index;
 }
 
+uint8_t Utils::bitboardToIndex(const uint64_t bitboard) {
+    return __builtin_ctzll(bitboard);
+}
+
 tuple<uint8_t, uint8_t, uint8_t, uint8_t> Utils::parseMove(const uint32_t move) {
     uint8_t piece = (move >> 24) & MASK_8;
     uint8_t color = (move >> 16) & MASK_8;
