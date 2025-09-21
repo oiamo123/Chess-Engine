@@ -10,25 +10,39 @@ using std::uint8_t;
 using std::uint64_t;
 using std::array;
 
+alignas(64) uint64_t MoveGenerator::raysN[64];
+alignas(64) uint64_t MoveGenerator::raysNE[64];
+alignas(64) uint64_t MoveGenerator::raysE[64];
+alignas(64) uint64_t MoveGenerator::raysSE[64];
+alignas(64) uint64_t MoveGenerator::raysS[64];
+alignas(64) uint64_t MoveGenerator::raysSW[64];
+alignas(64) uint64_t MoveGenerator::raysW[64];
+alignas(64) uint64_t MoveGenerator::raysNW[64];
+array<uint64_t, 64> MoveGenerator::knightmoves;
+array<uint64_t, 64> MoveGenerator::kingmoves;
+
 MoveGenerator::MoveGenerator() {
-    rays[(uint8_t)Direction::N] = RayGenerator::generateNMasks(); 
-    rays[(uint8_t)Direction::NE] = RayGenerator::generateNEMasks();
-    rays[(uint8_t)Direction::E] = RayGenerator::generateEMasks();
-    rays[(uint8_t)Direction::SE] = RayGenerator::generateSEMasks();
-    rays[(uint8_t)Direction::S] = RayGenerator::generateSMasks();
-    rays[(uint8_t)Direction::SW] = RayGenerator::generateSWMasks();
-    rays[(uint8_t)Direction::W] = RayGenerator::generateWMasks();
-    rays[(uint8_t)Direction::NW] = RayGenerator::generateNWMasks();
-    n = RayGenerator::generateNMasks();
+    auto nMasks = RayGenerator::generateNMasks();
+    auto neMasks = RayGenerator::generateNEMasks();
+    auto eMasks = RayGenerator::generateEMasks();
+    auto seMasks = RayGenerator::generateSEMasks();
+    auto sMasks = RayGenerator::generateSMasks();
+    auto swMasks = RayGenerator::generateSWMasks();
+    auto wMasks = RayGenerator::generateWMasks();
+    auto nwMasks = RayGenerator::generateNWMasks();
 
-    const array<uint64_t, 64> knightmoves = MoveGenerator::generateKnightTable();
-    const array<uint64_t, 64> kingmoves = MoveGenerator::generateKingTable();
-}
+    std::copy(nMasks.begin(), nMasks.end(), raysN);
+    std::copy(neMasks.begin(), neMasks.end(), raysNE);
+    std::copy(eMasks.begin(), eMasks.end(), raysE);
+    std::copy(seMasks.begin(), seMasks.end(), raysSE);
+    std::copy(sMasks.begin(), sMasks.end(), raysS);
+    std::copy(swMasks.begin(), swMasks.end(), raysSW);
+    std::copy(wMasks.begin(), wMasks.end(), raysW);
+    std::copy(nwMasks.begin(), nwMasks.end(), raysNW);
 
-// ¯\_(ツ)_/¯
-uint64_t MoveGenerator::generateKnightMoves(const uint8_t from) {
-    return knightmoves[from];
-}
+    knightmoves = MoveGenerator::generateKnightTable();
+    kingmoves = MoveGenerator::generateKingTable();
+};
 
 /*
 All sliding pieces work on the exact same concept. But basically:
@@ -39,56 +53,47 @@ All sliding pieces work on the exact same concept. But basically:
 -> https://goiamo.dev/notes/chess-engines/move-generation
 */
 
+// ¯\_(ツ)_/¯
+uint64_t MoveGenerator::generateKnightMoves(const uint8_t from) {
+    return knightmoves[from];
+};
+
 uint64_t MoveGenerator::generateBishopMoves(
     const uint8_t from, 
     const uint64_t opponentPieces, 
     const uint64_t friendlyPieces
 ) {
-    uint64_t moves = 0ULL;
-    array<Direction, 4> directions = { 
-        Direction::NE, 
-        Direction::SE,
-        Direction::SW, 
-        Direction::NW 
-    };
-
-    for (Direction direction : directions) {
-        moves |= getLegalMovesForRay(direction, from, opponentPieces, friendlyPieces);
-    };
-
-    return moves;
-}
+    return getLegalMovesForRay<Direction::NE>(from, opponentPieces, friendlyPieces) |
+        getLegalMovesForRay<Direction::SE>(from, opponentPieces, friendlyPieces) |
+        getLegalMovesForRay<Direction::SW>(from, opponentPieces, friendlyPieces) |
+        getLegalMovesForRay<Direction::NW>(from, opponentPieces, friendlyPieces);
+};
 
 uint64_t MoveGenerator::generateRookMoves(
     const uint8_t from, 
     const uint64_t opponentPieces, 
     const uint64_t friendlyPieces
 ) {
-    uint64_t moves = 0ULL;
-    array<Direction, 4> directions = { 
-        Direction::N, 
-        Direction::E, 
-        Direction::S, 
-        Direction::W 
-    };
-
-    for (Direction direction : directions) {
-        moves |= getLegalMovesForRay(direction, from, opponentPieces, friendlyPieces);
-    };
-
-    return moves;
-}
+    return getLegalMovesForRay<Direction::N>(from, opponentPieces, friendlyPieces) |
+        getLegalMovesForRay<Direction::E>(from, opponentPieces, friendlyPieces) |
+        getLegalMovesForRay<Direction::S>(from, opponentPieces, friendlyPieces) |
+        getLegalMovesForRay<Direction::W>(from, opponentPieces, friendlyPieces);
+};
 
 uint64_t MoveGenerator::generateQueenMoves(
     const uint8_t from, 
     const uint64_t opponentPieces, 
     const uint64_t friendlyPieces
-) {
-    uint64_t queenmoves = 0ULL;
-    queenmoves |= generateRookMoves(from, opponentPieces, friendlyPieces);
-    queenmoves |= generateBishopMoves(from, opponentPieces, friendlyPieces);
-    return queenmoves;
-}
+) {    
+    return getLegalMovesForRay<Direction::N>(from, opponentPieces, friendlyPieces) |
+        getLegalMovesForRay<Direction::NE>(from, opponentPieces, friendlyPieces) |
+        getLegalMovesForRay<Direction::E>(from, opponentPieces, friendlyPieces) |
+        getLegalMovesForRay<Direction::SE>(from, opponentPieces, friendlyPieces) |
+        getLegalMovesForRay<Direction::S>(from, opponentPieces, friendlyPieces) |
+        getLegalMovesForRay<Direction::SW>(from, opponentPieces, friendlyPieces) |
+        getLegalMovesForRay<Direction::W>(from, opponentPieces, friendlyPieces) |
+        getLegalMovesForRay<Direction::NW>(from, opponentPieces, friendlyPieces);;
+};
 
 uint64_t MoveGenerator::generateKingMoves(
     const uint8_t from, 
@@ -96,12 +101,12 @@ uint64_t MoveGenerator::generateKingMoves(
 ) {
     uint64_t moves = kingmoves[from];
     return moves &= ~friendlyPieces;
-}
+};
 
 array<uint64_t, 64> MoveGenerator::generateKingTable() {
     array<uint64_t, 64> table;
 
-    for (uint8_t square = 0; square < 63; square++) {
+    for (uint8_t square = 0; square < 64; square++) {
         uint64_t bit = 1ULL << square;
         uint64_t moves = 0ULL;
 
@@ -118,7 +123,7 @@ array<uint64_t, 64> MoveGenerator::generateKingTable() {
     }
 
     return table;
-}
+};
 
 array<uint64_t, 64> MoveGenerator::generateKnightTable() {
     const array<int8_t, 8> knightMoves = { -10, -17, -15, -6, 6, 10, 15, 17 };
@@ -145,87 +150,12 @@ array<uint64_t, 64> MoveGenerator::generateKnightTable() {
     }
 
     return table;
-}
-
-// Gets the right most or left most bit
-uint64_t MoveGenerator::nearestBlocker(const Direction direction, const uint64_t bitboard) {
-    switch (direction) {
-        case Direction::N:
-        case Direction::NE:
-        case Direction::E:
-        case Direction::SE:
-            return getRightMostBit(bitboard);
-
-        case Direction::S:
-        case Direction::SW:
-        case Direction::W:
-        case Direction::NW:
-            return getLeftMostBit(bitboard);
-    }
-    
-    return 0ULL;
-}
-
-// Corrections for friendly pieces
-uint64_t MoveGenerator::beyondBlocker(const Direction direction, const uint64_t blocker) {
-    switch (direction) {
-        case Direction::N:  return blocker >> 8; 
-        case Direction::NE: return blocker >> 9; 
-        case Direction::E:  return blocker >> 1; 
-        case Direction::SE: return blocker << 7; 
-        case Direction::S:  return blocker << 8; 
-        case Direction::SW: return blocker << 9; 
-        case Direction::W:  return blocker << 1; 
-        case Direction::NW: return blocker >> 7; 
-    }
-    return 0ULL;
-}
-
-// Gets the right most or left most bit between friendly and opponent pieces
-uint64_t MoveGenerator::getLegalMovesForRay(
-    Direction direction,
-    uint8_t from,
-    uint64_t opponentPieces,
-    uint64_t friendlyPieces
-) {
-    uint64_t ray = rays[(uint8_t)direction][from];
-    uint64_t opponentBlocker = nearestBlocker(direction, ray & opponentPieces);
-    uint64_t friendlyBlocker = beyondBlocker(direction, nearestBlocker(direction, ray & friendlyPieces));
-    uint64_t combinedBlocker = opponentBlocker | friendlyBlocker;
-
-    if (!combinedBlocker) {
-        return ray;
-    }
-
-    uint64_t blocker = nearestBlocker(direction, combinedBlocker);
-
-    if (!blocker) return ray;
-
-    int blockerIndex = Utils::bitboardToIndex(blocker);
-
-    switch (direction) {
-        case Direction::N:
-        case Direction::NE:
-        case Direction::E:
-        case Direction::NW:
-            return ray & ((blocker - 1) | blocker);
-        
-        case Direction::SE:
-        case Direction::S:
-        case Direction::SW:
-        case Direction::W:
-            return ray & ~(blocker - 1);
-    }
-    
-    return 0ULL;
-}
+};
 
 uint64_t MoveGenerator::getRightMostBit(uint64_t bitboard) {
-    return bitboard & -bitboard;
-}
+    return bitboard & (~bitboard + 1);
+};
 
 uint64_t MoveGenerator::getLeftMostBit(uint64_t bitboard) {
-    if (bitboard == 0) return 0ULL;
-    int index = 63 - __builtin_clzll(bitboard);
-    return 1ULL << index;
-}
+    return bitboard ? (1ULL << (63 ^ __builtin_clzll(bitboard))) : 0;
+};
