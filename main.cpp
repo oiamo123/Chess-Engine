@@ -98,4 +98,43 @@ int main() {
     auto end2 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration2 = end2 - start2;
     cout << "Naive loop: " << duration2.count() << endl;
+
+    // uint32_t move1 = Utils::createMove((uint8_t)PieceType::Pawn, (uint8_t)Color::White, (uint8_t)Square::A2, (uint8_t)Square::C4);
+    
+    // uint32_t move2 = Utils::createMove((uint8_t)PieceType::Pawn, (uint8_t)Color::White, (uint8_t)Square::B2, (uint8_t)Square::C5);
+    
+    // uint32_t move3 = Utils::createMove((uint8_t)PieceType::Pawn, (uint8_t)Color::White, (uint8_t)Square::C2, (uint8_t)Square::C6);
+    
+    // uint32_t move4 = Utils::createMove((uint8_t)PieceType::Pawn, (uint8_t)Color::White, (uint8_t)Square::D2, (uint8_t)Square::D6);
+    
+    // uint32_t move5 = Utils::createMove((uint8_t)PieceType::Pawn, (uint8_t)Color::White, (uint8_t)Square::E2, (uint8_t)Square::E6);
+    
+    // uint32_t move6 = Utils::createMove((uint8_t)PieceType::Pawn, (uint8_t)Color::White, (uint8_t)Square::F2, (uint8_t)Square::E5);
+    
+    // uint32_t move7 = Utils::createMove((uint8_t)PieceType::Pawn, (uint8_t)Color::White, (uint8_t)Square::G2, (uint8_t)Square::E4);
+    
+    // uint32_t move8 = Utils::createMove((uint8_t)PieceType::Pawn, (uint8_t)Color::White, (uint8_t)Square::H2, (uint8_t)Square::D4);
+    
+    // uint32_t move9 = Utils::createMove((uint8_t)PieceType::Queen, (uint8_t)Color::Black, (uint8_t)Square::A8, (uint8_t)Square::D5);
+
+    // board.move(move1);
+    // board.move(move2);
+    // board.move(move3);
+    // board.move(move4);
+    // board.move(move5); 
+    // board.move(move6);
+    // board.move(move7);
+    // board.move(move8);
+    // board.move(move9);
+
+    // uint64_t white = board.players[0].getAllPieces();
+    // uint64_t black = board.players[1].getAllPieces();
+
+    // Utils::printBitboard(board.players[0].getAllPieces());
+    // Utils::printBitboard(board.players[1].getAllPieces());
+
+    // board.display();
+
+    // uint64_t moves = moveGenerator.generateQueenMoves((uint8_t)Square::D5, white, black);
+    // Utils::printBitboard(moves);
 }

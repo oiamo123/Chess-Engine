@@ -47,6 +47,6 @@ class MoveGenerator {
     uint64_t getLeftMostBit(const uint64_t bitboard);
 };
 
-#include "./move_generator.tpp"
+#include "./get_legal_moves.tpp"
 
 #endif

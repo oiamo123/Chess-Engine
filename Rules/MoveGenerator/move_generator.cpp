@@ -153,9 +153,9 @@ array<uint64_t, 64> MoveGenerator::generateKnightTable() {
 };
 
 uint64_t MoveGenerator::getRightMostBit(uint64_t bitboard) {
-    return bitboard & (~bitboard + 1);
+    return bitboard & -bitboard;
 };
 
 uint64_t MoveGenerator::getLeftMostBit(uint64_t bitboard) {
-    return bitboard ? (1ULL << (63 ^ __builtin_clzll(bitboard))) : 0;
+    return bitboard ? (0x8000000000000000ULL >> __builtin_clzll(bitboard)) : 0;
 };
