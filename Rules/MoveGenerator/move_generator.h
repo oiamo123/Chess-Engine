@@ -5,10 +5,14 @@
 #include <functional>
 #include <cstdint>
 #include <array>
+#include <tuple>
 
 using std::uint64_t;
 using std::array;
 using std::function;
+using std::tuple;
+
+class Board;
 
 class MoveGenerator {
     public:
@@ -30,8 +34,12 @@ class MoveGenerator {
     alignas(64) static uint64_t raysW[64];
     alignas(64) static uint64_t raysNW[64];
 
-    static array<uint64_t, 64> knightmoves;
-    static array<uint64_t, 64> kingmoves;
+    alignas(64) static uint64_t knightmoves[64];
+    alignas(64) static uint64_t kingmoves[64];
+    alignas(64) static uint64_t pawnAttacksWhite[48];
+    alignas(64) static uint64_t pawnAttacksBlack[48];
+    alignas(64) static uint64_t pawnPushesWhite[48];
+    alignas(64) static uint64_t pawnPushesBlack[48];
 
     template<Direction dir>
     __attribute__((always_inline)) inline uint64_t getLegalMovesForRay(
@@ -42,11 +50,18 @@ class MoveGenerator {
 
     array<uint64_t, 64> generateKnightTable();
     array<uint64_t, 64> generateKingTable();
+    tuple<
+        array<uint64_t, 48>, 
+        array<uint64_t, 48>, 
+        array<uint64_t, 48>, 
+        array<uint64_t, 48>
+    > generatePawnTables();
 
     uint64_t getRightMostBit(const uint64_t bitboard);
     uint64_t getLeftMostBit(const uint64_t bitboard);
 };
 
 #include "./get_legal_moves.tpp"
+#include "./is_legal_move.tpp"
 
 #endif

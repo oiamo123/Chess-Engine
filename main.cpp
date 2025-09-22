@@ -115,7 +115,7 @@ int main() {
     
     // uint32_t move8 = Utils::createMove((uint8_t)PieceType::Pawn, (uint8_t)Color::White, (uint8_t)Square::H2, (uint8_t)Square::D4);
     
-    // uint32_t move9 = Utils::createMove((uint8_t)PieceType::Queen, (uint8_t)Color::Black, (uint8_t)Square::A8, (uint8_t)Square::D5);
+    // uint32_t move9 = Utils::createMove((uint8_t)PieceType::Queen, (uint8_t)Color::Black, (uint8_t)Square::D8, (uint8_t)Square::D5);
 
     // board.move(move1);
     // board.move(move2);

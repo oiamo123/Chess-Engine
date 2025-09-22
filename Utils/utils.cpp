@@ -17,6 +17,7 @@ string Utils::getDirection(const uint8_t direction) {
         case static_cast<uint8_t>(Direction::SW): return "South West";
         case static_cast<uint8_t>(Direction::W): return "West";
         case static_cast<uint8_t>(Direction::NW): return "North West";
+        default: return "";
     }
 }
 

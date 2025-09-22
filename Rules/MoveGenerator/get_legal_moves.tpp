@@ -1,7 +1,6 @@
-#ifndef MOVE_GENERATOR_TPP
-#define MOVE_GENERATOR_TPP
+#ifndef GET_LEGAL_MOVES_TPP
+#define GET_LEGAL_MOVES_TPP
 
-#include <iostream>
 #include "./move_generator.h"
 #include "../../Utils/utils.h"
 
@@ -133,7 +132,7 @@ __attribute__((always_inline)) inline uint64_t MoveGenerator::getLegalMovesForRa
         return ray;
     }
 
-    const uint64_t nearest = getRightMostBit(blockers);
+    const uint64_t nearest = getLeftMostBit(blockers);
     uint64_t moves = ray & ~(nearest - 1);
 
     if (nearest & friendlyPieces) {

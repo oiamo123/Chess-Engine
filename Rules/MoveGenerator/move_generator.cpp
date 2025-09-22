@@ -18,8 +18,12 @@ alignas(64) uint64_t MoveGenerator::raysS[64];
 alignas(64) uint64_t MoveGenerator::raysSW[64];
 alignas(64) uint64_t MoveGenerator::raysW[64];
 alignas(64) uint64_t MoveGenerator::raysNW[64];
-array<uint64_t, 64> MoveGenerator::knightmoves;
-array<uint64_t, 64> MoveGenerator::kingmoves;
+alignas(64) uint64_t MoveGenerator::knightmoves[64];
+alignas(64) uint64_t MoveGenerator::kingmoves[64];
+alignas(64) uint64_t MoveGenerator::pawnAttacksWhite[48];
+alignas(64) uint64_t MoveGenerator::pawnAttacksBlack[48];
+alignas(64) uint64_t MoveGenerator::pawnPushesWhite[48];
+alignas(64) uint64_t MoveGenerator::pawnPushesBlack[48];
 
 MoveGenerator::MoveGenerator() {
     auto nMasks = RayGenerator::generateNMasks();
@@ -40,8 +44,16 @@ MoveGenerator::MoveGenerator() {
     std::copy(wMasks.begin(), wMasks.end(), raysW);
     std::copy(nwMasks.begin(), nwMasks.end(), raysNW);
 
-    knightmoves = MoveGenerator::generateKnightTable();
-    kingmoves = MoveGenerator::generateKingTable();
+    auto knighttable = MoveGenerator::generateKnightTable();
+    auto kingtable = MoveGenerator::generateKingTable();
+    auto [pushesWhite, attacksWhite, pushesBlack, attacksBlack] = MoveGenerator::generatePawnTables();
+
+    std::copy(knighttable.begin(), knighttable.end(), knightmoves);
+    std::copy(kingtable.begin(), kingtable.end(), kingmoves);
+    std::copy(pushesWhite.begin(), pushesWhite.end(), pawnPushesWhite);
+    std::copy(attacksWhite.begin(), attacksWhite.end(), pawnAttacksWhite);
+    std::copy(pushesBlack.begin(), pushesBlack.end(), pawnPushesBlack);
+    std::copy(attacksBlack.begin(), attacksBlack.end(), pawnAttacksBlack);
 };
 
 /*
@@ -151,6 +163,54 @@ array<uint64_t, 64> MoveGenerator::generateKnightTable() {
 
     return table;
 };
+
+tuple<
+    array<uint64_t, 48>, 
+    array<uint64_t, 48>, 
+    array<uint64_t, 48>, 
+    array<uint64_t, 48>
+> MoveGenerator::generatePawnTables() {
+    array<uint64_t, 48> whitePushes;
+    array<uint64_t, 48> blackPushes;
+    array<uint64_t, 48> whiteAttacks;
+    array<uint64_t, 48> blackAttacks;
+
+    for (uint8_t square = 8; square < 56; square++) {
+        uint64_t bitboard = Utils::indexToBitboard(square);
+        uint64_t attacks = 0ULL;
+        uint64_t pushes = 0ULL;
+
+        pushes |= bitboard << 8;
+        if (bitboard & RANK_2) pushes |= bitboard << 16;
+
+        if (!(bitboard & FILE_A)) attacks |= bitboard << 7;
+        if (!(bitboard & FILE_H)) attacks |= bitboard << 9;
+
+        whitePushes[square - 8] = pushes;
+        whiteAttacks[square - 8] = attacks;
+
+        Utils::printBitboard(attacks | pushes);
+    }
+
+    for (uint8_t square = 8; square < 56; square++) {
+        uint64_t bitboard = Utils::indexToBitboard(square);
+        uint64_t attacks = 0ULL;
+        uint64_t pushes = 0ULL;
+
+        pushes |= bitboard >> 8;
+        if (bitboard & RANK_7) pushes |= bitboard >> 16;
+
+        if (!(bitboard & FILE_H)) attacks |= bitboard >> 7;
+        if (!(bitboard & FILE_A)) attacks |= bitboard >> 9;
+        
+        blackPushes[square - 8] = pushes;
+        blackAttacks[square - 8] = attacks;
+        
+        Utils::printBitboard(attacks | pushes);
+    }
+
+    return make_tuple(whitePushes, whiteAttacks, blackPushes, blackAttacks);
+}
 
 uint64_t MoveGenerator::getRightMostBit(uint64_t bitboard) {
     return bitboard & -bitboard;
