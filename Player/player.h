@@ -11,14 +11,13 @@ using std::uint64_t;
 using std::array;
 
 class Player {
-public:
+    public:
     uint8_t color;
-    uint64_t enPassantTarget;
-    uint64_t attackedSquares;
-    array<uint64_t, (uint8_t)PieceType::Count> pieceBitboards;
+    uint64_t occupiedSquares;
+    array<uint64_t, 6> pieceBitboards;
+    array<uint8_t, 5> slidingPieceTable;
+    array<uint8_t, 5> pieceCount;
 
-    uint64_t getAllPieces();
-    uint64_t getAttackedSquares();
     void setPosition(
         uint8_t color,
         uint64_t rooks,
@@ -28,8 +27,9 @@ public:
         uint64_t queen,
         uint64_t king
     );
+    
+    void move(uint8_t from, uint8_t to, uint8_t piece);
 
-    void move(uint32_t move);
     uint64_t& operator[](PieceType type);
 };
 

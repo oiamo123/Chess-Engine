@@ -49,6 +49,20 @@ string Utils::getSquare(const uint64_t square) {
     return string(1, fileChar) + string(1, rankChar);
 }
 
+
+bool Utils::sameRank(const uint8_t from, const uint8_t to) {
+    return (from / 8) == (to / 8);
+}
+
+bool Utils::sameFile(const uint8_t from, const uint8_t to) {
+    return (from % 8) == (to % 8);
+}
+
+bool Utils::sameDiagonal(const uint8_t from, const uint8_t to) {
+    return (from / 8 - from % 8) == (to / 8 - to % 8);
+}
+
+
 void Utils::printBitboard(const uint64_t bitboard) {
     for (int rank = 7; rank >= 0; rank--) {
         for (int file = 0; file < 8; file++) {

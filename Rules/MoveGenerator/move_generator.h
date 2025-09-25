@@ -13,16 +13,15 @@ using std::function;
 using std::tuple;
 
 class Board;
+class Player;
 
 class MoveGenerator {
     public:
     MoveGenerator();
-
-    uint64_t generateKnightMoves(const uint8_t from);
-    uint64_t generateBishopMoves(const uint8_t from, const uint64_t opponentPieces, const uint64_t friendlyPieces);
-    uint64_t generateRookMoves(const uint8_t from, const uint64_t opponentPieces, const uint64_t friendlyPieces);
-    uint64_t generateQueenMoves(const uint8_t from, const uint64_t opponentPieces, const uint64_t friendlyPieces);
-    uint64_t generateKingMoves(const uint8_t from, const uint64_t friendlyPieces);
+    uint64_t getBetweenMove(uint8_t from, uint8_t to, uint8_t piece);
+    tuple<uint64_t, uint64_t> getPawnMove(uint8_t from, uint8_t color);
+    uint64_t getKnightMove(uint64_t from);
+    uint64_t getKingMove(uint64_t from);
 
     private:
     alignas(64) static uint64_t raysN[64];
@@ -40,28 +39,14 @@ class MoveGenerator {
     alignas(64) static uint64_t pawnAttacksBlack[48];
     alignas(64) static uint64_t pawnPushesWhite[48];
     alignas(64) static uint64_t pawnPushesBlack[48];
-
-    template<Direction dir>
-    __attribute__((always_inline)) inline uint64_t getLegalMovesForRay(
-        uint8_t from,
-        uint64_t opponentPieces,
-        uint64_t friendlyPieces
-    );
+    array<array<array<uint64_t, 64>, 64>, 3> betweenTable;
+    array<array<array<uint64_t, 64>, 2>, 2> pawnmoves;
 
     array<uint64_t, 64> generateKnightTable();
     array<uint64_t, 64> generateKingTable();
-    tuple<
-        array<uint64_t, 48>, 
-        array<uint64_t, 48>, 
-        array<uint64_t, 48>, 
-        array<uint64_t, 48>
-    > generatePawnTables();
-
-    uint64_t getRightMostBit(const uint64_t bitboard);
-    uint64_t getLeftMostBit(const uint64_t bitboard);
+    array<array<array<uint64_t, 64>, 2>, 2> generatePawnTables();
+    array<array<array<uint64_t, 64>, 64>, 3> generateBetweenTable();
+    uint64_t rayBetween(uint8_t from, uint8_t to);
 };
-
-#include "./get_legal_moves.tpp"
-#include "./is_legal_move.tpp"
 
 #endif

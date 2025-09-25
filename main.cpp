@@ -51,53 +51,55 @@ uint64_t generateQueenMovesNaive(uint8_t from, uint64_t opponentPieces, uint64_t
 }
 
 int main() {
-    MoveGenerator moveGenerator = MoveGenerator();
-    Board board;
-    board.create();
+    Utils::printBitboard(RANK_7);
+    Utils::printBitboard(RANK_2);
 
-    uint32_t move1 = Utils::createMove((uint8_t)PieceType::Pawn, (uint8_t)Color::White, (uint8_t)Square::E2, (uint8_t)Square::E4);
-    uint32_t move2 = Utils::createMove((uint8_t)PieceType::Pawn, (uint8_t)Color::Black, (uint8_t)Square::D7, (uint8_t)Square::D5);
-    uint32_t move3 = Utils::createMove((uint8_t)PieceType::Pawn, (uint8_t)Color::White, (uint8_t)Square::B2, (uint8_t)Square::A4);
-    uint32_t move4 = Utils::createMove((uint8_t)PieceType::Queen, (uint8_t)Color::Black, (uint8_t)Square::D8, (uint8_t)Square::C4);
-    uint32_t move5 = Utils::createMove((uint8_t)PieceType::Queen, (uint8_t)Color::White, (uint8_t)Square::D1, (uint8_t)Square::A5);
-    uint32_t move6 = Utils::createMove((uint8_t)PieceType::Pawn, (uint8_t)Color::Black, (uint8_t)Square::A7, (uint8_t)Square::A6);
+    // Board board;
+    // board.create();
 
-    board.move(move1);
-    board.move(move2);
-    board.move(move3);
-    board.move(move4);
-    board.move(move5);
-    board.move(move6);
+    // uint32_t move1 = Utils::createMove((uint8_t)PieceType::Pawn, (uint8_t)Color::White, (uint8_t)Square::E2, (uint8_t)Square::E4);
+    // uint32_t move2 = Utils::createMove((uint8_t)PieceType::Pawn, (uint8_t)Color::Black, (uint8_t)Square::D7, (uint8_t)Square::D5);
+    // uint32_t move3 = Utils::createMove((uint8_t)PieceType::Pawn, (uint8_t)Color::White, (uint8_t)Square::B2, (uint8_t)Square::A4);
+    // uint32_t move4 = Utils::createMove((uint8_t)PieceType::Queen, (uint8_t)Color::Black, (uint8_t)Square::D8, (uint8_t)Square::C4);
+    // uint32_t move5 = Utils::createMove((uint8_t)PieceType::Queen, (uint8_t)Color::White, (uint8_t)Square::D1, (uint8_t)Square::A5);
+    // uint32_t move6 = Utils::createMove((uint8_t)PieceType::Pawn, (uint8_t)Color::Black, (uint8_t)Square::A7, (uint8_t)Square::A6);
 
-    uint64_t white = board.players[0].getAllPieces();
-    uint64_t black = board.players[1].getAllPieces();
+    // board.move(move1);
+    // board.move(move2);
+    // board.move(move3);
+    // board.move(move4);
+    // board.move(move5);
+    // board.move(move6);
 
-    Utils::printBitboard(board.players[0].getAllPieces());
-    Utils::printBitboard(board.players[1].getAllPieces());
+    // uint64_t white = board.players[0].occupiedSquares;
+    // uint64_t black = board.players[1].occupiedSquares;
 
-    board.display();
+    // Utils::printBitboard(board.players[0].occupiedSquares);
+    // Utils::printBitboard(board.players[1].occupiedSquares);
+
+    // board.display();
 
 
-    auto start1 = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < 1000000; i++) {
-        for (int sq = 0; sq < 64; sq++) {
-            volatile uint64_t moves = moveGenerator.generateQueenMoves(sq, black, white);
-        }
-    }
+    // auto start1 = std::chrono::high_resolution_clock::now();
+    // for (int i = 0; i < 1000000; i++) {
+    //     for (int sq = 0; sq < 64; sq++) {
+    //         volatile uint64_t moves = moveGenerator.generateQueenMoves(sq, black, white);
+    //     }
+    // }
 
-    auto end1 = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> duration1 = end1 - start1;
-    cout << "Ray-based: " << duration1.count() << endl;
+    // auto end1 = std::chrono::high_resolution_clock::now();
+    // std::chrono::duration<double> duration1 = end1 - start1;
+    // cout << "Ray-based: " << duration1.count() << endl;
 
-    auto start2 = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < 1000000; i++) {
-        for (int sq = 0; sq < 64; sq++) {
-            volatile uint64_t moves = generateQueenMovesNaive(sq, black, white);
-        }
-    }
-    auto end2 = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> duration2 = end2 - start2;
-    cout << "Naive loop: " << duration2.count() << endl;
+    // auto start2 = std::chrono::high_resolution_clock::now();
+    // for (int i = 0; i < 1000000; i++) {
+    //     for (int sq = 0; sq < 64; sq++) {
+    //         volatile uint64_t moves = generateQueenMovesNaive(sq, black, white);
+    //     }
+    // }
+    // auto end2 = std::chrono::high_resolution_clock::now();
+    // std::chrono::duration<double> duration2 = end2 - start2;
+    // cout << "Naive loop: " << duration2.count() << endl;
 
     // uint32_t move1 = Utils::createMove((uint8_t)PieceType::Pawn, (uint8_t)Color::White, (uint8_t)Square::A2, (uint8_t)Square::C4);
     
@@ -127,11 +129,11 @@ int main() {
     // board.move(move8);
     // board.move(move9);
 
-    // uint64_t white = board.players[0].getAllPieces();
-    // uint64_t black = board.players[1].getAllPieces();
+    // uint64_t white = board.players[0].occupiedSquares;
+    // uint64_t black = board.players[1].occupiedSquares;
 
-    // Utils::printBitboard(board.players[0].getAllPieces());
-    // Utils::printBitboard(board.players[1].getAllPieces());
+    // Utils::printBitboard(board.players[0].occupiedSquares);
+    // Utils::printBitboard(board.players[1].occupiedSquares);
 
     // board.display();
 

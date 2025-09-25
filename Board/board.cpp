@@ -13,15 +13,7 @@ using std::uint8_t;
 using std::uint32_t;
 using std::uint64_t;
 
-Board::Board() : rules(this) {
-    uint8_t whiteCanCastleK = 1;
-    uint8_t whiteCanCastleQ = 1;
-    uint8_t blackCanCastleK = 1;
-    uint8_t blackCanCastleQ = 1;
-    array<Player, 2> players;
-
-    uint8_t turn = 0;
-}
+Board::Board() : rules(this->players[0], this->players[1], this->moveGenerator) {}
 
 void Board::create(const string fen) {
     if (fen != "") {
@@ -49,8 +41,6 @@ void Board::create(const string fen) {
         0x1000000000000000ULL  
     );
 
-    whiteCanCastleK = whiteCanCastleQ = 1;
-    blackCanCastleK = blackCanCastleQ = 1;
     turn = 0;
 }
 

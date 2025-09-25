@@ -16,6 +16,9 @@ class Utils {
         static string getType(const uint8_t type);
         static string getColor(const uint8_t color);
         static string getSquare(const uint64_t square);
+        static bool sameRank(const uint8_t from, const uint8_t to);
+        static bool sameFile(const uint8_t from, const uint8_t to);
+        static bool sameDiagonal(const uint8_t from, const uint8_t to);
         static uint64_t indexToBitboard(const uint8_t index);
         static uint8_t bitboardToIndex(const uint64_t);
         static void printBitboard(const uint64_t bitboard);
