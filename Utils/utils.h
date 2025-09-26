@@ -1,17 +1,24 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <string>
+#include "./global.h"
 #include <tuple>
-#include "../Pieces/Piece/piece.h"
+#include <array>
+#include <string>
 
+using std::tuple;
+using std::array;
 using std::string;
 using std::uint8_t;
+using std::uint32_t;
 using std::uint64_t;
-using std::tuple;
+
+class Player;
 
 class Utils {
     public:
+        static void parseFen(const string& fen, FenParams& fenParams);
+        
         static string getDirection(const uint8_t direction);
         static string getType(const uint8_t type);
         static string getColor(const uint8_t color);

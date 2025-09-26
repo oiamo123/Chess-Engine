@@ -1,12 +1,5 @@
 #include "./rules.h"
 #include "../Utils/utils.h"
-#include "./Player/player.h"
-#include "./MoveGenerator/move_generator.h"
-
-using std::uint8_t;
-using std::uint16_t;
-using std::uint64_t;
-using std::array;
 
 Rules::Rules(
     Player& white, 
@@ -52,6 +45,8 @@ bool Rules::IsLegalMove(uint32_t move) {
 
 bool Rules::isInCheck(uint8_t from, uint8_t to, Player cur, Player opposing) {
     uint64_t allPieces = cur.occupiedSquares | opposing.occupiedSquares;
+
+    
 
     return true;
 }

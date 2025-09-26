@@ -1,29 +1,40 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include "../Pieces/Piece/piece.h"
-#include "../Player/player.h"
+#include "../../Rules/MoveGenerator/move_generator.h"
 #include "../Rules/rules.h"
 #include <cstdint>
 #include <string>
+#include <array>
 
+using std::string;
+using std::array;
 using std::uint8_t;
 using std::uint32_t;
 using std::uint64_t;
-using std::string;
 
 class Board {
-public:
-    Board();
-
+    public:
+    Board(const string fen);
+    void move(const uint32_t move);
+    
+    private:
     Rules rules;
-    array<Player, 2> players;
     MoveGenerator moveGenerator;
+    
+    array<Player, 2> players;
     uint8_t turn;
-
+    uint64_t enPassantSquare;
+    uint8_t halfMoves;
+    uint8_t fullMoves;
+    
     void display();
     void create(const string fen = "");
-    void move(const uint32_t move);
+    void createPlayers(
+        array<vector<uint8_t>, 6> whitePieces,
+        array<vector<uint8_t>, 6> blackPieces
+    );
+    void setPinned();
 };
 
 #endif

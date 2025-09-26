@@ -1,15 +1,17 @@
 #ifndef RULES_H
 #define RULES_H
 
+#include "./MoveGenerator/move_generator.h"
+#include "../Player/player.h"
 #include "../Utils/global.h"
 #include <array>
 #include <cstdint>
 
+using std::array;
+using std::uint8_t;
 using std::uint32_t;
 using std::uint64_t;
-using std::array;
 
-class Board;
 class MoveGenerator;
 class Player;
 

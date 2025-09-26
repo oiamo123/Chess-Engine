@@ -1,11 +1,91 @@
-#include <string>
-#include <iostream>
 #include "./utils.h"
-#include "./global.h"
+#include "../Player/player.h"
+#include <iostream>
+#include <vector>
+#include <tuple>
+#include <sstream>
+
+using std::stringstream;
+using std::vector;
 using std::cout;
 using std::endl;
-using std::string;
-using std::uint8_t;
+
+void Utils::parseFen(const string& fen, FenParams& fenParams) {
+    if (!fen.empty()) return;
+    
+    vector<string> tokens;
+    stringstream ss(fen);
+    string token;
+
+    while (getline(ss, token, ' ')) {
+        tokens.push_back(token);
+    }
+
+    string boardString = tokens[0];
+    string toMoveString = tokens[1];
+    string whiteCastlingString = tokens[2];
+    string blackCastlingString = tokens[3];
+    string halfMovesString = tokens[4];
+    string fullMovesString = tokens[5];
+
+    uint8_t curIndex = 0;
+    array<uint8_t, 8> whiteCount{};
+    array<uint8_t, 8> blackCount{};
+    whiteCount.fill(0);
+    blackCount.fill(0);
+
+    for (char c : boardString) {
+        if (isdigit(c)) {
+            curIndex += c - '0'; 
+            continue;
+        }
+
+        char cLower = tolower(c);
+        bool isBlack = (c == cLower);
+        Color friendly = isBlack ? Color::Black : Color::White;
+        auto& pieceCount = isBlack ? blackCount : whiteCount;
+        auto& pieces = isBlack ? fenParams.blackPieces : fenParams.whitePieces;
+
+        uint8_t pt = 0;
+        uint8_t baseIndex = 0;
+
+        switch (cLower) {
+            case 'p': 
+                pt = (uint8_t)PieceType::Pawn;   
+                baseIndex = (uint8_t)PieceIndex::P1; 
+                break;
+            case 'n': 
+                pt = (uint8_t)PieceType::Knight; 
+                baseIndex = (uint8_t)PieceIndex::N1; 
+                break;
+            case 'b': 
+                pt = (uint8_t)PieceType::Bishop; 
+                baseIndex = (uint8_t)PieceIndex::B1; 
+                break;
+            case 'r': 
+                pt = (uint8_t)PieceType::Rook;   
+                baseIndex = (uint8_t)PieceIndex::R1; 
+                break;
+            case 'q': 
+                pt = (uint8_t)PieceType::Queen;  
+                baseIndex = (uint8_t)PieceIndex::Q;  
+                break;
+            case 'k': 
+                pt = (uint8_t)PieceType::King;   
+                baseIndex = (uint8_t)PieceIndex::K;  
+                break;
+            default: 
+                continue; 
+        }
+
+        uint8_t pi = baseIndex + pieceCount[pt];
+        pieces[pt].push_back(pi);
+        pieceCount[pt]++;
+        
+        curIndex++;
+    }
+}
+
 
 string Utils::getDirection(const uint8_t direction) {
     switch (direction) {

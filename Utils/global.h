@@ -3,6 +3,8 @@
 
 #include <cstdint>
 
+constexpr uint8_t NO_SQUARE = 255;
+
 constexpr uint64_t MASK_8 = 0xFF;
 constexpr uint64_t MASK_16 = 0xFFFF;
 constexpr uint64_t MASK_32 = 0xFFFFFFFF;
@@ -25,6 +27,25 @@ constexpr uint64_t RANK_5 = RANK_1 << (8 * 4);
 constexpr uint64_t RANK_6 = RANK_1 << (8 * 5);
 constexpr uint64_t RANK_7 = RANK_1 << (8 * 6);
 constexpr uint64_t RANK_8 = RANK_1 << (8 * 7);
+
+enum class PieceIndex : uint8_t {
+    P1 = 0,
+    P2,
+    P3,
+    P4,   
+    P5,
+    P6,
+    P7,
+    P8,
+    N1,
+    N2,
+    B1,
+    B2,
+    R1,
+    R2,
+    Q,
+    K   
+};
 
 enum class PieceType : uint8_t {
     Pawn = 0,
@@ -61,6 +82,16 @@ enum class Direction : uint8_t {
     SW,
     W,
     NW
+};
+
+struct FenParams {
+    array<vector<uint8_t>, 6> blackPieces;
+    array<vector<uint8_t>, 6> whitePieces;
+    array<array<uint8_t, 2>, 2> castlingRights;
+    uint8_t turn;
+    uint8_t enPassantSquare;
+    uint8_t halfMoves;
+    uint8_t fullMoves;
 };
 
 #endif
