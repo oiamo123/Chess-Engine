@@ -1,7 +1,7 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include "../../Rules/MoveGenerator/move_generator.h"
+#include "../Rules/MoveGenerator/move_generator.h"
 #include "../Rules/rules.h"
 #include <cstdint>
 #include <string>
@@ -15,7 +15,7 @@ using std::uint64_t;
 
 class Board {
     public:
-    Board(const string fen);
+    Board(const string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     void move(const uint32_t move);
     
     private:
@@ -34,7 +34,6 @@ class Board {
         array<vector<uint8_t>, 6> whitePieces,
         array<vector<uint8_t>, 6> blackPieces
     );
-    void setPinned();
 };
 
 #endif

@@ -51,11 +51,7 @@ uint64_t generateQueenMovesNaive(uint8_t from, uint64_t opponentPieces, uint64_t
 }
 
 int main() {
-    Utils::printBitboard(RANK_7);
-    Utils::printBitboard(RANK_2);
-
-    // Board board;
-    // board.create();
+    Board board;
 
     // uint32_t move1 = Utils::createMove((uint8_t)PieceType::Pawn, (uint8_t)Color::White, (uint8_t)Square::E2, (uint8_t)Square::E4);
     // uint32_t move2 = Utils::createMove((uint8_t)PieceType::Pawn, (uint8_t)Color::Black, (uint8_t)Square::D7, (uint8_t)Square::D5);

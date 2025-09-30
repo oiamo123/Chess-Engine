@@ -14,16 +14,12 @@ using std::tuple;
 using std::cout;
 using std::endl;
 
-alignas(64) uint64_t MoveGenerator::raysN[64];
-alignas(64) uint64_t MoveGenerator::raysNE[64];
-alignas(64) uint64_t MoveGenerator::raysE[64];
-alignas(64) uint64_t MoveGenerator::raysSE[64];
-alignas(64) uint64_t MoveGenerator::raysS[64];
-alignas(64) uint64_t MoveGenerator::raysSW[64];
-alignas(64) uint64_t MoveGenerator::raysW[64];
-alignas(64) uint64_t MoveGenerator::raysNW[64];
 alignas(64) uint64_t MoveGenerator::knightmoves[64];
+alignas(64) uint64_t MoveGenerator::bishopmoves[64];
+alignas(64) uint64_t MoveGenerator::rookmoves[64];
+alignas(64) uint64_t MoveGenerator::queenmoves[64];
 alignas(64) uint64_t MoveGenerator::kingmoves[64];
+alignas(64) uint64_t MoveGenerator::castlingmoves[64];
 alignas(64) uint64_t MoveGenerator::pawnAttacksWhite[48];
 alignas(64) uint64_t MoveGenerator::pawnAttacksBlack[48];
 alignas(64) uint64_t MoveGenerator::pawnPushesWhite[48];
@@ -44,22 +40,21 @@ MoveGenerator::MoveGenerator() {
     auto wMasks = RayGenerator::generateWMasks();
     auto nwMasks = RayGenerator::generateNWMasks();
 
-    std::copy(nMasks.begin(), nMasks.end(), raysN);
-    std::copy(neMasks.begin(), neMasks.end(), raysNE);
-    std::copy(eMasks.begin(), eMasks.end(), raysE);
-    std::copy(seMasks.begin(), seMasks.end(), raysSE);
-    std::copy(sMasks.begin(), sMasks.end(), raysS);
-    std::copy(swMasks.begin(), swMasks.end(), raysSW);
-    std::copy(wMasks.begin(), wMasks.end(), raysW);
-    std::copy(nwMasks.begin(), nwMasks.end(), raysNW);
-
     auto knighttable = MoveGenerator::generateKnightTable();
+    auto bishoptable = MoveGenerator::generateBishopTable(neMasks, seMasks, swMasks, nwMasks);
+    auto rooktable = MoveGenerator::generateRookTable(nMasks, eMasks, sMasks, wMasks);
+    auto queentable = MoveGenerator::generateQueenTable(bishoptable, rooktable);
     auto kingtable = MoveGenerator::generateKingTable();
-    betweenTable = generateBetweenTable();
+    auto castlingtable = MoveGenerator::generateCastlingMoves();
     pawnmoves = MoveGenerator::generatePawnTables();
+    betweenTable = generateBetweenTable();
 
     std::copy(knighttable.begin(), knighttable.end(), knightmoves);
+    std::copy(bishoptable.begin(), bishoptable.end(), bishopmoves);
+    std::copy(rooktable.begin(), rooktable.end(), rookmoves);
+    std::copy(queentable.begin(), queentable.end(), queenmoves);
     std::copy(kingtable.begin(), kingtable.end(), kingmoves);
+    std::copy(castlingtable.begin(), castlingtable.end(), castlingmoves);
 };
 
 /*
@@ -87,47 +82,48 @@ All sliding pieces use a "between" board.
 -> https://goiamo.dev/notes/chess-engines/is-between-table
 */
 
-// PUBLIC
-uint64_t MoveGenerator::getBetweenMove(uint8_t from, uint8_t to, uint8_t piece) {
-    return betweenTable[piece - 2][from][to];
-}
-
-tuple<uint64_t, uint64_t> MoveGenerator::getPawnMove(uint8_t from, uint8_t color) {
-    return std::make_tuple(pawnmoves[color][0][from], pawnmoves[color][1][from]);
-}
-
-uint64_t MoveGenerator::getKnightMove(uint64_t from) {
+uint64_t MoveGenerator::getKnightMoves(uint64_t from) {
     return knightmoves[from];
 }
 
-uint64_t MoveGenerator::getKingMove(uint64_t from) {
+uint64_t MoveGenerator::getBishopMoves(uint64_t from) {
+    return bishopmoves[from];
+}
+
+uint64_t MoveGenerator::getRookMoves(uint64_t from) {
+    return rookmoves[from];
+}
+
+uint64_t MoveGenerator::getQueenMoves(uint64_t from) {
+    return queenmoves[from];
+}
+
+// have to combine attacks and pushes for pawns
+tuple<uint64_t, uint64_t> MoveGenerator::getPawnMoves(uint8_t from, uint8_t color) {
+    return std::make_tuple(
+        pawnmoves[color][(uint8_t)PawnMoveType::Pushes][from], 
+        pawnmoves[color][(uint8_t)PawnMoveType::Attacks][from]
+    );
+}
+
+uint64_t MoveGenerator::getKingMoves(uint64_t from) {
     return kingmoves[from];
 }
 
+// have to specifiy if the castle is kingside or queenside
+tuple<uint64_t, uint8_t> MoveGenerator::getCastlingMoves(uint64_t to) {
+    uint8_t castlingType = to == (2 || 58) ? (uint8_t)CastlingType::Kingside : (uint8_t)CastlingType::Queenside;
+    return std::make_tuple(castlingmoves[to], castlingType); 
+}
 
-// PRIVATE
-array<uint64_t, 64> MoveGenerator::generateKingTable() {
-    array<uint64_t, 64> table;
+// between table is 0 based in the order bishop, rook, queen
+// since piecetype also has pawns and knights, we have to subtract 2
+// ie bishop = 2, 2 - 2 = 0, rook = 3, 3 - 2 = 1
+uint64_t MoveGenerator::getBetweenMoves(uint8_t from, uint8_t to, uint8_t piece) {
+    return betweenTable[piece - 2][from][to];
+}
 
-    for (uint8_t square = 0; square < 64; square++) {
-        uint64_t bit = 1ULL << square;
-        uint64_t moves = 0ULL;
-
-        moves |= (bit << 8);
-        moves |= (bit >> 8);
-        if (!(bit & FILE_H)) moves |= (bit << 1);
-        if (!(bit & FILE_A)) moves |= (bit >> 1);
-        if (!(bit & FILE_H)) moves |= (bit << 9);
-        if (!(bit & FILE_A)) moves |= (bit << 7);
-        if (!(bit & FILE_H)) moves |= (bit >> 7);
-        if (!(bit & FILE_A)) moves |= (bit >> 9);
-
-        table[square] = moves;
-    }
-
-    return table;
-};
-
+// generates knight lookup table
 array<uint64_t, 64> MoveGenerator::generateKnightTable() {
     const array<int8_t, 8> knightMoves = { -10, -17, -15, -6, 6, 10, 15, 17 };
     array<uint64_t, 64> table;
@@ -155,6 +151,110 @@ array<uint64_t, 64> MoveGenerator::generateKnightTable() {
     return table;
 };
 
+// generates bishop lookup table
+array<uint64_t, 64> MoveGenerator::generateBishopTable(
+    array<uint64_t, 64> ne,
+    array<uint64_t, 64> se,
+    array<uint64_t, 64> sw,
+    array<uint64_t, 64> nw
+) {
+    array<uint64_t, 64> table;
+
+    for (int square = 0; square < 64; square++) {
+        uint64_t rays = 0ULL;
+
+        rays |= ne[square];
+        rays |= se[square];
+        rays |= sw[square];
+        rays |= nw[square];
+
+        table[square] = rays;
+    }
+
+    return table;
+}
+
+// generates rook lookup table
+array<uint64_t, 64> MoveGenerator::generateRookTable(
+    array<uint64_t, 64> n,
+    array<uint64_t, 64> e,
+    array<uint64_t, 64> s,
+    array<uint64_t, 64> w
+) {
+    array<uint64_t, 64> table;
+
+    for (int square = 0; square < 64; square++) {
+        uint64_t rays = 0ULL;
+
+        rays |= n[square];
+        rays |= e[square];
+        rays |= s[square];
+        rays |= w[square];
+
+        table[square] = rays;
+    }
+
+    return table;
+}
+
+// generates queen lookup table, just combines bishop + rook
+array<uint64_t, 64> MoveGenerator::generateQueenTable(
+    array<uint64_t, 64> bishoptable,
+    array<uint64_t, 64> rooktable
+) {
+    array<uint64_t, 64> table;
+
+    for (int square = 0; square < 64; square++) {
+        uint64_t rays = 0ULL;
+
+        rays |= bishoptable[square];
+        rays |= rooktable[square];
+
+        table[square] = rays;
+    }
+
+    return table;
+}
+
+// generates king lookup table
+array<uint64_t, 64> MoveGenerator::generateKingTable() {
+    array<uint64_t, 64> table;
+
+    for (uint8_t square = 0; square < 64; square++) {
+        uint64_t bit = 1ULL << square;
+        uint64_t moves = 0ULL;
+
+        moves |= (bit << 8);
+        moves |= (bit >> 8);
+        if (!(bit & FILE_H)) moves |= (bit << 1);
+        if (!(bit & FILE_A)) moves |= (bit >> 1);
+        if (!(bit & FILE_H)) moves |= (bit << 9);
+        if (!(bit & FILE_A)) moves |= (bit << 7);
+        if (!(bit & FILE_H)) moves |= (bit >> 7);
+        if (!(bit & FILE_A)) moves |= (bit >> 9);
+
+        table[square] = moves;
+    }
+
+    return table;
+};
+
+// generates castling table using to square, returns squares that there can't be pieces / attacks on
+array<uint64_t, 64> MoveGenerator::generateCastlingMoves() {
+    array<uint64_t, 64> table;
+    table.fill(0ULL);
+    table.fill(0Ull);
+
+    table[2] = (1ULL << 1) | (1ULL << 2) | (1ULL << 3);  
+    table[6] = (1ULL << 5) | (1ULL << 6);                
+
+    table[58] = (1ULL << 57) | (1ULL << 58) | (1ULL << 59); 
+    table[62] = (1ULL << 61) | (1ULL << 62);  
+
+    return table;
+}
+
+// generates pawn table
 array<array<array<uint64_t, 64>, 2>, 2> MoveGenerator::generatePawnTables() {
     array<array<array<uint64_t, 64>, 2>, 2> pm;
 
@@ -191,6 +291,7 @@ array<array<array<uint64_t, 64>, 2>, 2> MoveGenerator::generatePawnTables() {
     return pm;
 }
 
+// generate between table, refer to ./is_between.png or https://goiamo.dev/chess-engines/is-between-table
 array<array<array<uint64_t, 64>, 64>, 3> MoveGenerator::generateBetweenTable() {
     array<array<array<uint64_t, 64>, 64>, 3> bt{};
 
@@ -219,6 +320,7 @@ array<array<array<uint64_t, 64>, 64>, 3> MoveGenerator::generateBetweenTable() {
     return bt;
 }
 
+// generates the ray between from and to square
 uint64_t MoveGenerator::rayBetween(uint8_t from, uint8_t to) {
     uint64_t mask = 0ULL;
 

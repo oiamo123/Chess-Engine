@@ -28,7 +28,9 @@ class Player {
     uint8_t color;
     uint64_t occupiedSquares;
     uint64_t pinnedPieces;
-    
+    uint64_t threats;
+    uint64_t enPassantSquare;
+
     array<uint8_t, 16> pieces;
     array<uint8_t, 64> lookup;
     array<uint8_t, 6> slidingPieces;
@@ -38,10 +40,10 @@ class Player {
 
     private:
     void setPosition(
-        array<uint8_t, 8> pawns,
-        array<uint8_t, 2> knights,
-        array<uint8_t, 2> bishops,
-        array<uint8_t, 2> rooks,
+        vector<uint8_t> pawns,
+        vector<uint8_t> knights,
+        vector<uint8_t> bishops,
+        vector<uint8_t> rooks,
         uint8_t queen,
         uint8_t king
     );

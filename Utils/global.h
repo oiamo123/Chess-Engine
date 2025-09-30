@@ -2,8 +2,16 @@
 #define GLOBAL_H
 
 #include <cstdint>
+#include <array>
+#include <vector>
 
-constexpr uint8_t NO_SQUARE = 255;
+using std::vector;
+using std::array;
+using std::uint8_t;
+using std::uint64_t;
+
+constexpr uint8_t NO_SQUARE = 64;
+constexpr uint8_t NO_PIECE = 16;
 
 constexpr uint64_t MASK_8 = 0xFF;
 constexpr uint64_t MASK_16 = 0xFFFF;
@@ -84,10 +92,15 @@ enum class Direction : uint8_t {
     NW
 };
 
+enum class CastlingType {
+    Kingside = 0,
+    Queenside
+};
+
 struct FenParams {
     array<vector<uint8_t>, 6> blackPieces;
     array<vector<uint8_t>, 6> whitePieces;
-    array<array<uint8_t, 2>, 2> castlingRights;
+    array<array<bool, 2>, 2> castlingRights;
     uint8_t turn;
     uint8_t enPassantSquare;
     uint8_t halfMoves;

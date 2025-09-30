@@ -23,24 +23,23 @@ class Rules {
         MoveGenerator& moveGenerator
     );
     
-    bool IsLegalMove(uint32_t move);
-    bool IsInCheck(uint64_t king);
+    bool IsLegalMove(
+        uint8_t piece,
+        uint8_t color,
+        uint8_t from,
+        uint8_t to
+    );
 
     private:
     Player& white;
     Player& black;
     MoveGenerator& moveGenerator;
 
-    template<PieceType pt, Color c = Color::White>
-    __attribute__((always_inline)) inline bool isLegalMove(
-        const uint8_t from, 
-        const uint8_t to
-    );
-
     bool isInCheck(uint8_t from, uint8_t to, Player cur, Player opposing);
     bool isInCheckmate();
     bool isInStalemate();
     bool isDraw();
+    bool IsInCheck(uint64_t king);
 };
 
 #endif
