@@ -15,12 +15,10 @@ Board::Board(
 
 // creates the board
 void Board::create(const string fen) {    
-    // parse the fen
     FenParams fenParams;
     Utils::parseFen(fen, fenParams);
-
-    // create the players
     createPlayers(fenParams.whitePieces, fenParams.blackPieces);
+    display();
 }
 
 // displays the board

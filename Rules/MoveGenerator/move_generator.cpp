@@ -291,7 +291,7 @@ array<array<array<uint64_t, 64>, 2>, 2> MoveGenerator::generatePawnTables() {
     return pm;
 }
 
-// generate between table, refer to ./is_between.png or https://goiamo.dev/chess-engines/is-between-table
+// generate between table, refer to ./is_between.png or https://goiamo.dev/notes/chess-engines/is-between-table
 array<array<array<uint64_t, 64>, 64>, 3> MoveGenerator::generateBetweenTable() {
     array<array<array<uint64_t, 64>, 64>, 3> bt{};
 
@@ -305,14 +305,12 @@ array<array<array<uint64_t, 64>, 64>, 3> MoveGenerator::generateBetweenTable() {
                 mask = rayBetween(from, to);
                 bt[(uint8_t)PieceType::Bishop - 2][from][to] = mask;
                 bt[(uint8_t)PieceType::Queen - 2][from][to] = mask;
-                Utils::printBitboard(mask);
             }
 
             if (Utils::sameRank(from, to) || Utils::sameFile(from, to)) {
                 mask = rayBetween(from, to);
                 bt[(uint8_t)PieceType::Rook - 2][from][to] = mask;
                 bt[(uint8_t)PieceType::Queen - 2][from][to] = mask;
-                Utils::printBitboard(mask);
             }
         }
     }

@@ -162,7 +162,9 @@ bool Utils::sameFile(const uint8_t from, const uint8_t to) {
 }
 
 bool Utils::sameDiagonal(const uint8_t from, const uint8_t to) {
-    return (from / 8 - from % 8) == (to / 8 - to % 8);
+    bool d1 = (from / 8 - from % 8) == (to / 8 - to % 8);
+    bool d2 = (from / 8 + from % 8) == (to / 8 + to % 8);
+    return d1 || d2;
 }
 
 void Utils::printBitboard(const uint64_t bitboard) {
