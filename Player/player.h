@@ -15,6 +15,21 @@ using std::uint64_t;
 class Player {
     public:
     Player() = default;
+    uint64_t pawns;
+    uint64_t knights;
+    uint64_t knights;
+    uint64_t bishops;
+    uint64_t rooks;
+    uint64_t queen;
+    uint64_t king;
+    
+    uint8_t color;
+    uint64_t occupiedSquares;
+    uint64_t enPassantSquare;
+    
+    bool canCastleK;
+    bool canCastleQ;
+
     Player(
         uint8_t color,
         vector<uint8_t> pawns,
@@ -25,18 +40,9 @@ class Player {
         uint8_t king
     );
 
-    uint8_t color;
-    uint64_t occupiedSquares;
-    uint64_t pinnedPieces;
-    uint64_t threats;
-    uint64_t enPassantSquare;
-
     array<uint8_t, 16> pieces;
     array<uint8_t, 64> lookup;
     array<uint8_t, 6> slidingPieces;
-
-    bool canCastleK;
-    bool canCastleQ;
 
     private:
     void setPosition(

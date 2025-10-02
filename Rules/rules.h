@@ -19,8 +19,7 @@ class Rules {
     public:
     Rules(
         Player& white, 
-        Player& black, 
-        MoveGenerator& moveGenerator
+        Player& black
     );
     
     bool IsLegalMove(
@@ -33,9 +32,15 @@ class Rules {
     private:
     Player& white;
     Player& black;
-    MoveGenerator& moveGenerator;
 
-    bool isInCheck(uint8_t from, uint8_t to, Player cur, Player opposing);
+    bool isInCheck(
+        uint8_t piece,
+        uint8_t from, 
+        uint8_t to, 
+        Player cur, 
+        Player opposing
+    );
+    
     bool isInCheckmate();
     bool isInStalemate();
     bool isDraw();

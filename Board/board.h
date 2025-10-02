@@ -2,6 +2,7 @@
 #define BOARD_H
 
 #include "../Rules/MoveGenerator/move_generator.h"
+#include "../Utils/global.h"
 #include "../Rules/rules.h"
 #include <cstdint>
 #include <string>
@@ -20,7 +21,6 @@ class Board {
     
     private:
     Rules rules;
-    MoveGenerator moveGenerator;
     
     array<Player, 2> players;
     uint8_t turn;
@@ -34,6 +34,9 @@ class Board {
         array<vector<uint8_t>, 6> whitePieces,
         array<vector<uint8_t>, 6> blackPieces
     );
+
+    void processCastle(const MoveParams& moveParams);
+    void processMove(const MoveParams& moveParams);
 };
 
 #endif

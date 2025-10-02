@@ -107,4 +107,26 @@ struct FenParams {
     uint8_t fullMoves;
 };
 
+struct MoveParams {
+    MoveParams(
+        Player& friendly, 
+        Player& opponent, 
+        uint64_t friendlyKingPos, 
+        uint64_t opponentKingPos,
+        uint8_t piece,
+        uint8_t color,
+        uint8_t from,
+        uint8_t to     
+    );
+
+    Player& friendly;
+    Player& opponent;
+    uint64_t friendlyKingPos;
+    uint64_t opponentKingPos;
+    uint8_t piece;
+    uint8_t color;
+    uint8_t from;
+    uint8_t to;
+};
+
 #endif

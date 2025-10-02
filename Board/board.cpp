@@ -9,7 +9,7 @@ using std::endl;
 
 Board::Board(
     const string fen
-) : moveGenerator(), players(), rules(this->players[0], this->players[1], this->moveGenerator) {
+) : players(), rules(this->players[0], this->players[1]) {
     create(fen);
 }
 
@@ -87,18 +87,37 @@ void Board::createPlayers(
 void Board::move(uint32_t move) {
     auto [piece, color, from, to] = Utils::parseMove(move);
 
-    if (!rules.IsLegalMove(piece, color, from, to)) {
-        return;
-    };
+    // check if the move is legal
+    if (!rules.IsLegalMove(piece, color, from, to)) return;
 
-    Player friendly = color == (uint8_t)Color::White ? players[(uint8_t)Color::White] : players[(uint8_t)Color::Black];
-    Player opponent = color == (uint8_t)Color::White ? players[(uint8_t)Color::Black] : players[(uint8_t)Color::White];
+    // if it is legal, make the move
+    Player& friendly = color == (uint8_t)Color::White ? players[(uint8_t)Color::White] : players[(uint8_t)Color::Black];
+    Player& opponent = color == (uint8_t)Color::White ? players[(uint8_t)Color::Black] : players[(uint8_t)Color::White];
+    uint64_t friendlyKingPos = friendly.lookup[(uint8_t)PieceIndex::K];
+    uint64_t opponentKingPos = opponent.lookup[(uint8_t)PieceIndex::K];
 
-    uint8_t friendlyPiece = friendly.lookup[from];
-    friendly.pieces[friendlyPiece] = to;
+    MoveParams moveParams = MoveParams(
+        friendly,
+        opponent,
+        friendlyKingPos,
+        opponentKingPos,
+        piece,
+        color,
+        from,
+        to
+    );
 
-    uint8_t opponentPiece = opponent.lookup[to];
-    if (opponentPiece != NO_PIECE) {
-        opponent.pieces[opponentPiece] = NO_SQUARE;
+    if (abs((int)to - (int)from) == 2) {
+        processCastle(moveParams);
+    } else {
+        processMove(moveParams);
     }
+}
+
+void Board::processCastle(const MoveParams& moveParams) {
+    
+}
+
+void Board::processMove(const MoveParams& moveParams) {
+    
 }

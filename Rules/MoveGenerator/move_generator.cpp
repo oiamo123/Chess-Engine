@@ -14,47 +14,9 @@ using std::tuple;
 using std::cout;
 using std::endl;
 
-alignas(64) uint64_t MoveGenerator::knightmoves[64];
-alignas(64) uint64_t MoveGenerator::bishopmoves[64];
-alignas(64) uint64_t MoveGenerator::rookmoves[64];
-alignas(64) uint64_t MoveGenerator::queenmoves[64];
-alignas(64) uint64_t MoveGenerator::kingmoves[64];
-alignas(64) uint64_t MoveGenerator::castlingmoves[64];
-alignas(64) uint64_t MoveGenerator::pawnAttacksWhite[48];
-alignas(64) uint64_t MoveGenerator::pawnAttacksBlack[48];
-alignas(64) uint64_t MoveGenerator::pawnPushesWhite[48];
-alignas(64) uint64_t MoveGenerator::pawnPushesBlack[48];
-
 enum class PawnMoveType : uint8_t {
     Pushes = 0,
     Attacks
-};
-
-MoveGenerator::MoveGenerator() {
-    auto nMasks = RayGenerator::generateNMasks();
-    auto neMasks = RayGenerator::generateNEMasks();
-    auto eMasks = RayGenerator::generateEMasks();
-    auto seMasks = RayGenerator::generateSEMasks();
-    auto sMasks = RayGenerator::generateSMasks();
-    auto swMasks = RayGenerator::generateSWMasks();
-    auto wMasks = RayGenerator::generateWMasks();
-    auto nwMasks = RayGenerator::generateNWMasks();
-
-    auto knighttable = MoveGenerator::generateKnightTable();
-    auto bishoptable = MoveGenerator::generateBishopTable(neMasks, seMasks, swMasks, nwMasks);
-    auto rooktable = MoveGenerator::generateRookTable(nMasks, eMasks, sMasks, wMasks);
-    auto queentable = MoveGenerator::generateQueenTable(bishoptable, rooktable);
-    auto kingtable = MoveGenerator::generateKingTable();
-    auto castlingtable = MoveGenerator::generateCastlingMoves();
-    pawnmoves = MoveGenerator::generatePawnTables();
-    betweenTable = generateBetweenTable();
-
-    std::copy(knighttable.begin(), knighttable.end(), knightmoves);
-    std::copy(bishoptable.begin(), bishoptable.end(), bishopmoves);
-    std::copy(rooktable.begin(), rooktable.end(), rookmoves);
-    std::copy(queentable.begin(), queentable.end(), queenmoves);
-    std::copy(kingtable.begin(), kingtable.end(), kingmoves);
-    std::copy(castlingtable.begin(), castlingtable.end(), castlingmoves);
 };
 
 /*
@@ -82,45 +44,24 @@ All sliding pieces use a "between" board.
 -> https://goiamo.dev/notes/chess-engines/is-between-table
 */
 
-uint64_t MoveGenerator::getKnightMoves(uint64_t from) {
-    return knightmoves[from];
-}
+void MoveGenerator::init() {
+    auto nMasks   = RayGenerator::generateNMasks();
+    auto neMasks  = RayGenerator::generateNEMasks();
+    auto eMasks   = RayGenerator::generateEMasks();
+    auto seMasks  = RayGenerator::generateSEMasks();
+    auto sMasks   = RayGenerator::generateSMasks();
+    auto swMasks  = RayGenerator::generateSWMasks();
+    auto wMasks   = RayGenerator::generateWMasks();
+    auto nwMasks  = RayGenerator::generateNWMasks();
 
-uint64_t MoveGenerator::getBishopMoves(uint64_t from) {
-    return bishopmoves[from];
-}
-
-uint64_t MoveGenerator::getRookMoves(uint64_t from) {
-    return rookmoves[from];
-}
-
-uint64_t MoveGenerator::getQueenMoves(uint64_t from) {
-    return queenmoves[from];
-}
-
-// have to combine attacks and pushes for pawns
-tuple<uint64_t, uint64_t> MoveGenerator::getPawnMoves(uint8_t from, uint8_t color) {
-    return std::make_tuple(
-        pawnmoves[color][(uint8_t)PawnMoveType::Pushes][from], 
-        pawnmoves[color][(uint8_t)PawnMoveType::Attacks][from]
-    );
-}
-
-uint64_t MoveGenerator::getKingMoves(uint64_t from) {
-    return kingmoves[from];
-}
-
-// have to specifiy if the castle is kingside or queenside
-tuple<uint64_t, uint8_t> MoveGenerator::getCastlingMoves(uint64_t to) {
-    uint8_t castlingType = to == (2 || 58) ? (uint8_t)CastlingType::Kingside : (uint8_t)CastlingType::Queenside;
-    return std::make_tuple(castlingmoves[to], castlingType); 
-}
-
-// between table is 0 based in the order bishop, rook, queen
-// since piecetype also has pawns and knights, we have to subtract 2
-// ie bishop = 2, 2 - 2 = 0, rook = 3, 3 - 2 = 1
-uint64_t MoveGenerator::getBetweenMoves(uint8_t from, uint8_t to, uint8_t piece) {
-    return betweenTable[piece - 2][from][to];
+    knightTable   = generateKnightTable();
+    bishopTable   = generateBishopTable(neMasks, seMasks, swMasks, nwMasks);
+    rookTable     = generateRookTable(nMasks, eMasks, sMasks, wMasks);
+    queenTable    = generateQueenTable(bishopTable, rookTable);
+    kingTable     = generateKingTable();
+    castlingTable = generateCastlingMoves();
+    pawnTable     = generatePawnTables();
+    betweenTable  = generateBetweenTable();
 }
 
 // generates knight lookup table
