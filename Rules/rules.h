@@ -35,16 +35,18 @@ class Rules {
 
     bool isInCheck(
         uint8_t piece,
-        uint8_t from, 
-        uint8_t to, 
-        Player cur, 
-        Player opposing
+        uint8_t square,
+        Player& friendly,
+        Player& opposing
     );
     
     bool isInCheckmate();
     bool isInStalemate();
     bool isDraw();
     bool IsInCheck(uint64_t king);
+
+    private:
+    bool isThreatened(uint8_t square, Player& friendly, Player& opposing);
 };
 
 #endif

@@ -31,6 +31,7 @@ bool Rules::IsLegalMove(
         case (uint8_t)PieceType::Rook:
         case (uint8_t)PieceType::Queen:
             moves |= MoveGenerator::betweenTable[piece][from][to];
+            if (!moves) return false;
             if (moves & allPieces) return false;
             return true;
 
@@ -45,11 +46,11 @@ bool Rules::IsLegalMove(
             auto pushes = MoveGenerator::pawnTable[color][0][from];
             auto attacks = MoveGenerator::pawnTable[color][1][from];
 
-            // handle pushes
+            // pawn pushes
             if (pushes && (pushes & toBitboard)) {
                 if (toBitboard & allPieces) return false;        
             
-                // validate double pushes
+                // double pushes
                 if (color == (uint8_t)Color::White && (fromBitboard & RANK_2) && (to == from + 16)) {
                     if ((fromBitboard << 8) & allPieces) return false;
                 }
@@ -58,7 +59,7 @@ bool Rules::IsLegalMove(
                     if ((fromBitboard >> 8) & allPieces) return false;
                 }
 
-            // handle attacks
+            // pawn attacks
             } else if (attacks & toBitboard) {
                 if (!(toBitboard & (opposingPlayer.occupiedSquares | opposingPlayer.enPassantSquare))) return false;
             }
@@ -71,43 +72,94 @@ bool Rules::IsLegalMove(
             moves = MoveGenerator::kingTable[from];
             if (moves & toBitboard) return true;
 
-            // castling
-            if (color == (uint8_t)Color::White && !(RANK_1 & toBitboard)) return false;
-            if (color == (uint8_t)Color::Black && !(RANK_8 & toBitboard)) return false;
-
-            auto moves = MoveGenerator::castlingTable[to];
-            auto castlingType = to == (2 || 58) ? (uint8_t)CastlingType::Kingside : (uint8_t)CastlingType::Queenside;
-
+            moves = MoveGenerator::castlingTable[to];
             if (!moves) return false;
+
+            auto castlingType = (to == (uint8_t)Square::B1 || to == (uint8_t)Square::B7) ? 
+                (uint8_t)CastlingType::Queenside : (uint8_t)CastlingType::Kingside;
 
             // ensure:
             // - player can castle king / queen side
-            // - none of the squares are threatened
-            // - no pieces in between
+            // - no pieces between
             if (castlingType == (uint8_t)CastlingType::Kingside && !friendlyPlayer.canCastleK) return false;
             if (castlingType == (uint8_t)CastlingType::Queenside && !friendlyPlayer.canCastleQ) return false;
             if (moves & allPieces) return false;
-            if (moves & opposingPlayer.threats) return false;
 
             return true;
     }
+
+    return false;
+}
+
+bool Rules::isThreatened(uint8_t square, Player& friendly, Player& opposing) {
+    uint64_t squareBitboard = (1ULL << square);
+
+    // knight
+    if (MoveGenerator::knightTable[square] & opposing.knights) return true;
+
+    // king
+    if (MoveGenerator::kingTable[square] & opposing.king) return true;
+
+    // pawn
+    if (MoveGenerator::pawnTable[friendly.color][1][square] & opposing.pawns) return true;
+
+    // sliding pieces
+    for (uint8_t i = (uint8_t)PieceIndex::B1; i <= (uint8_t)PieceIndex::Q; i++) {
+        if (opposing.pieces[i] == NO_SQUARE) continue; 
+        uint8_t pieceType = ((uint8_t)i - (uint8_t)PieceIndex::B1) >> 1;
+
+        uint8_t pieceLocation = opposing.pieces[i];
+        uint64_t ray = MoveGenerator::betweenTable[pieceType][square][pieceLocation];
+
+        if (ray && !(ray & (friendly.occupiedSquares | opposing.occupiedSquares))) return true;
+    }
+
+    return false;
 }
 
 bool Rules::isInCheck(
     uint8_t piece,
-    uint8_t from, 
-    uint8_t to, 
-    Player friendly, 
-    Player opposing
+    uint8_t square,
+    Player& friendly,
+    Player& opposing
 ) {
-    // king is moving
+    // check if castling
     if (piece == (uint8_t)PieceType::King) {
+        switch (square) {
+             // white queenside
+            case (uint8_t)Square::B2:
+                if (isThreatened(friendly.pieces[(uint8_t)PieceIndex::K], friendly, opposing) ||
+                    isThreatened((uint8_t)Square::C1, friendly, opposing) ||
+                    isThreatened((uint8_t)Square::D1, friendly, opposing))
+                    return true;
+                break;
 
+            // black queenside
+            case (uint8_t)Square::B7: 
+                if (isThreatened(friendly.pieces[(uint8_t)PieceIndex::K], friendly, opposing) ||
+                    isThreatened((uint8_t)Square::C8, friendly, opposing))
+                    return true;
+                break;
 
-    // any other piece is moving
-    } else {
+            // white kingside
+            case (uint8_t)Square::H2: 
+                if (isThreatened(friendly.pieces[(uint8_t)PieceIndex::K], friendly, opposing) ||
+                    isThreatened((uint8_t)Square::F1, friendly, opposing) ||
+                    isThreatened((uint8_t)Square::G1, friendly, opposing))
+                    return true;
+                break;
 
+            // black kingside
+            case (uint8_t)Square::H7: 
+                if (isThreatened(friendly.pieces[(uint8_t)PieceIndex::K], friendly, opposing) ||
+                    isThreatened((uint8_t)Square::F8, friendly, opposing))
+                    return true;
+                break;
+        }
     }
+
+    // general
+    return isThreatened(friendly.pieces[(uint8_t)PieceIndex::K], friendly, opposing);
 }
 
 bool Rules::isInCheckmate() {
